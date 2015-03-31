@@ -7,7 +7,18 @@
 void minimal(int nsel=0, int mode=0, bool silent=0){
 
 
-  TFile *fin = new TFile("../tuples/synch_full_second.root");
+  
+  char plotName[300];
+  sprintf(plotName,"test");
+  if (nsel == 0) {sprintf(plotName,"ttH125");}
+  
+  
+  char myRootFile[300];
+  sprintf(myRootFile,"../tuples/%s.root", plotName);
+
+  TFile *fin = new TFile(myRootFile);
+  // TFile::Open("root://eoscms.cern.ch//eos/cms/store/user/gesmith/crabdir/v3/ttH125/multileptree_9_1_uB4.root"); 
+
   TTree *tree = (TTree*)fin->Get("OSTwoLepAna/summaryTree");
 
   // Tree branches
@@ -22,10 +33,14 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   vector<ttH::Electron> *preselected_electrons = 0;
   vector<ttH::Muon> *preselected_muons = 0;
   vector<ttH::Lepton> *preselected_leptons = 0;
+  vector<ttH::Jet> *preselected_jets = 0;
 
-  vector<ttH::Electron> *cutBased_electrons = 0;
-  vector<ttH::Muon> *cutBased_muons = 0;
-  vector<ttH::Lepton> *cutBased_leptons = 0;
+  vector<ttH::Electron> *tight_electrons = 0;
+  vector<ttH::Muon> *tight_muons = 0;
+  vector<ttH::Lepton> *tight_leptons = 0;
+  vector<ttH::Jet> *tight_bJets = 0;
+  
+  vector<ttH::MET> *met = 0;
   
   
   TBranch *b_mcwgt;   //!
@@ -39,10 +54,13 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   TBranch *b_preselected_electrons = 0;
   TBranch *b_preselected_muons = 0;
   TBranch *b_preselected_leptons = 0;
+  TBranch *b_preselected_jets = 0;
   
-  TBranch *b_cutBased_electrons = 0;
-  TBranch *b_cutBased_muons = 0;
-  TBranch *b_cutBased_leptons = 0;
+  TBranch *b_tight_electrons = 0;
+  TBranch *b_tight_muons = 0;
+  TBranch *b_tight_leptons = 0;
+  TBranch *b_tight_bJets = 0;
+  TBranch *b_met = 0;
  
   tree->SetBranchAddress("mcwgt", &mcwgt, &b_mcwgt);
   tree->SetBranchAddress("wgt", &wgt, &b_wgt);
@@ -54,9 +72,12 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   tree->SetBranchAddress("preselected_electrons", &preselected_electrons, &b_preselected_electrons);
   tree->SetBranchAddress("preselected_muons", &preselected_muons, &b_preselected_muons);
   tree->SetBranchAddress("preselected_leptons", &preselected_leptons, &b_preselected_leptons);
-  tree->SetBranchAddress("cutBased_electrons", &cutBased_electrons, &b_cutBased_electrons);
-  tree->SetBranchAddress("cutBased_muons", &cutBased_muons, &b_cutBased_muons);
-  tree->SetBranchAddress("cutBased_leptons", &cutBased_leptons, &b_cutBased_leptons);
+  tree->SetBranchAddress("preselected_jets", &preselected_jets, &b_preselected_jets);
+  tree->SetBranchAddress("tight_electrons", &tight_electrons, &b_tight_electrons);
+  tree->SetBranchAddress("tight_muons", &tight_muons, &b_tight_muons);
+  tree->SetBranchAddress("tight_leptons", &tight_leptons, &b_tight_leptons);
+  tree->SetBranchAddress("tight_bJets", &tight_bJets, &b_tight_bJets);
+  tree->SetBranchAddress("met", &met, &b_met);
   ////
   
   if (mode != 0 && mode !=1 && mode !=2) mode = 0;
@@ -67,17 +88,69 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     else if (mode == 2) cout << " ee channel, " ;
   }
   char newRootFile[300];
-  sprintf(newRootFile,"results/first_preselected_%d.root", mode);
+  sprintf(newRootFile,"results/output_%s_%d.root", plotName, mode);
   TFile f_var(newRootFile, "RECREATE");
   if(!silent){
     std::cout << "results root file named " << newRootFile << std::endl;
+    std::cout << "[Info:] Everything made using preselected objects " << newRootFile << std::endl;
   }
-
+  
   // Histos
   char title[300];
   sprintf(title,"cuts");
-  TH1F* histo = new TH1F( title, " ", 20, 0, 20 );
+  TH1F* histo = new TH1F( title, "Cut Flow", 20, 0, 20 );
   histo->Sumw2();
+  
+  sprintf(title,"njets");
+  TH1F* histo_njets = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
+  histo_njets->Sumw2();
+  
+  sprintf(title,"nbjets");
+  TH1F* histo_nbjets = new TH1F( title, "Number of b-jets pt > 20", 20, 0, 20 );
+  histo_nbjets->Sumw2();
+  
+  sprintf(title,"nleptons");
+  TH1F* histo_nleptons = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
+  histo_nleptons->Sumw2();
+  
+  sprintf(title,"njets_2lep");
+  TH1F* histo_njets_2l = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
+  histo_njets_2l->Sumw2();
+  
+  sprintf(title,"nbjets_2lep");
+  TH1F* histo_nbjets_2l = new TH1F( title, "Number of b-jets pt > 20", 20, 0, 20 );
+  histo_nbjets_2l->Sumw2();
+  
+  sprintf(title,"nleptons_2lep");
+  TH1F* histo_nleptons_2l = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
+  histo_nleptons_2l->Sumw2();
+
+  
+  sprintf(title,"njets_ss");
+  TH1F* histo_njets_ss = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
+  histo_njets_ss->Sumw2();
+  
+  sprintf(title,"nbjets_ss");
+  TH1F* histo_nbjets_ss = new TH1F( title, "Number of b-jets pt > 20", 20, 0, 20 );
+  histo_nbjets_ss->Sumw2();
+  
+  sprintf(title,"nleptons_ss");
+  TH1F* histo_nleptons_ss = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
+  histo_nleptons_ss->Sumw2();
+
+  sprintf(title,"pt_lep1");
+  TH1F* histo_ptlep1 = new TH1F( title, "Pt of the leading lepton", 100, 0, 200 );
+  histo_ptlep1->Sumw2();
+
+  sprintf(title,"pt_lep2");
+  TH1F* histo_ptlep2 = new TH1F( title, "Pt of the second lepton", 100, 0, 200 );
+  histo_ptlep2->Sumw2();
+
+  sprintf(title,"met");
+  TH1F* histo_met = new TH1F( title, "Missing ET", 100, 0, 200 );
+  histo_met->Sumw2();
+
+
 
  
   double weight = 1;
@@ -90,10 +163,13 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     b_preselected_electrons->GetEntry(tentry);
     b_preselected_muons->GetEntry(tentry);
     b_preselected_leptons->GetEntry(tentry);
+    b_preselected_jets->GetEntry(tentry);
     b_higgs_decay->GetEntry(tentry);
-    b_cutBased_electrons->GetEntry(tentry);
-    b_cutBased_muons->GetEntry(tentry);
-    b_cutBased_leptons->GetEntry(tentry);
+    b_tight_electrons->GetEntry(tentry);
+    b_tight_muons->GetEntry(tentry);
+    b_tight_leptons->GetEntry(tentry);
+    b_tight_bJets->GetEntry(tentry);
+    b_met->GetEntry(tentry);
      
     //do stuff 
     histo->Fill(0., weight);
@@ -101,8 +177,36 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     if (!higgs_decay) continue;
     histo->Fill(1., weight);
     
+    int njets = 0;
+    for (int i = 0; i < preselected_jets->size() ; i++){
+      ttH::Jet jet = preselected_jets->at(i);
+      if (jet.tlv().Pt() < 20) continue;
+      njets++;
+    }
+    histo_njets->Fill(njets, weight);
+    
+    
+    int nbjets = 0;
+    for (int i = 0; i < tight_bJets->size() ; i++){
+      ttH::Jet bjet = tight_bJets->at(i);
+      if (bjet.tlv().Pt() < 20) continue;
+      nbjets++;
+    }
+    histo_nbjets->Fill(nbjets, weight);
+    
+    int nleptons = 0;
+    for (int i = 0; i < preselected_leptons->size() ; i++){
+      ttH::Lepton lep0 = preselected_leptons->at(i);
+      if (lep0.tlv().Pt() < 10) continue;
+      nleptons++;
+    }
+    histo_nleptons->Fill(nleptons, weight);
+    
+    
+    
     if (preselected_leptons->size() < 2) continue;
     histo->Fill(2., weight);
+    
  
     ttH::Lepton lepton1 = preselected_leptons->at(0);
     ttH::Lepton lepton2 = preselected_leptons->at(1);
@@ -112,9 +216,68 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     if (mode == 2 && (abs(lepton1.pdgID) != 11 ||  abs(lepton2.pdgID) != 11)) continue;
     histo->Fill(3., weight);
    
+     int njets_2l = 0;
+    for (int i = 0; i < preselected_jets->size() ; i++){
+      ttH::Jet jet = preselected_jets->at(i);
+      if (jet.tlv().Pt() < 20) continue;
+      njets_2l++;
+    }
+    histo_njets_2l->Fill(njets_2l, weight);
+    
+    
+    int nbjets_2l = 0;
+    for (int i = 0; i < tight_bJets->size() ; i++){
+      ttH::Jet bjet = tight_bJets->at(i);
+      if (bjet.tlv().Pt() < 20) continue;
+      nbjets_2l++;
+    }
+    histo_nbjets_2l->Fill(nbjets_2l, weight);
+    
+    int nleptons_2l = 0;
+    for (int i = 0; i < preselected_leptons->size() ; i++){
+      ttH::Lepton lep0 = preselected_leptons->at(i);
+      if (lep0.tlv().Pt() < 10) continue;
+      nleptons_2l++;
+    }
+    histo_nleptons_2l->Fill(nleptons_2l, weight);
+    
+    
+
 
     if (lepton1.charge!=lepton2.charge) continue;
     histo->Fill(4., weight);
+
+         int njets_ss = 0;
+    for (int i = 0; i < preselected_jets->size() ; i++){
+      ttH::Jet jet = preselected_jets->at(i);
+      if (jet.tlv().Pt() < 20) continue;
+      njets_ss++;
+    }
+    histo_njets_ss->Fill(njets_ss, weight);
+    
+    
+    int nbjets_ss = 0;
+    for (int i = 0; i < tight_bJets->size() ; i++){
+      ttH::Jet bjet = tight_bJets->at(i);
+      if (bjet.tlv().Pt() < 20) continue;
+      nbjets_ss++;
+    }
+    histo_nbjets_ss->Fill(nbjets_ss, weight);
+    
+    int nleptons_ss = 0;
+    for (int i = 0; i < preselected_leptons->size() ; i++){
+      ttH::Lepton lep0 = preselected_leptons->at(i);
+      if (lep0.tlv().Pt() < 10) continue;
+      nleptons_ss++;
+    }
+    histo_nleptons_ss->Fill(nleptons_ss, weight);
+    
+    ttH::MET evmet = met->at(0);
+    histo_met->Fill(evmet.tlv().Pt(), weight);	      
+    histo_ptlep1->Fill(lepton1.tlv().Pt(), weight);
+    histo_ptlep2->Fill(lepton2.tlv().Pt(), weight);
+        
+	      
 	      
     if (lepton1.tlv().Pt() <= 20) continue;
     if (lepton2.tlv().Pt() <= 20)  continue;
@@ -122,10 +285,10 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     histo->Fill(5., weight);
     
 
-    if (cutBased_leptons->size() != 2) continue;
+    if (tight_leptons->size() != 2) continue;
   
-    ttH::Lepton tlepton1 = cutBased_leptons->at(0);
-    ttH::Lepton tlepton2 = cutBased_leptons->at(1);
+    ttH::Lepton tlepton1 = tight_leptons->at(0);
+    ttH::Lepton tlepton2 = tight_leptons->at(1);
     
     histo->Fill(6., weight);
     
