@@ -4,7 +4,7 @@
 #include "objectClasses.h"
 
 
-void minimal(int nsel=0, int mode=0, bool silent=0){
+void synch(int nsel=0, int mode=0, bool silent=0){
 
 
   TFile *fin = new TFile("../tuples/synch_full_second.root");
@@ -67,7 +67,7 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     else if (mode == 2) cout << " ee channel, " ;
   }
   char newRootFile[300];
-  sprintf(newRootFile,"results/first_preselected_%d.root", mode);
+  sprintf(newRootFile,"results/synch_%d.root", mode);
   TFile f_var(newRootFile, "RECREATE");
   if(!silent){
     std::cout << "results root file named " << newRootFile << std::endl;
@@ -151,13 +151,13 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     cout << "------------------------------------------" << endl;
     for (int i = 1; i < 9; i++){
       if (i == 1) cout << " all: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 2) cout << " higgs decay: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      //if (i == 2) cout << " higgs decay: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 3) cout << " 2+ preselected leptons: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 4) cout << " decay to " << label << ": " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      //if (i == 4) cout << " decay to " << label << ": " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 5) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 6) cout << " pt > 20,20: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 7) cout << " 2 tight: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 8) cout << " 2 tight corresponding with the presel: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      //if (i == 8) cout << " 2 tight corresponding with the presel: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
    }
     cout << "------------------------------------------" << endl;
 
