@@ -109,7 +109,7 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   histo_njets->Sumw2();
   
   sprintf(title,"nbjets_%s", plotName);
-  TH1F* histo_nbjets = new TH1F( title, "Number of b-jets pt > 20", 20, 0, 20 );
+  TH1F* histo_nbjets = new TH1F( title, "Number of b-jets pt > 20", 10, 0, 10 );
   histo_nbjets->Sumw2();
   
   sprintf(title,"nleptons_%s", plotName);;
@@ -121,20 +121,19 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   histo_njets_2l->Sumw2();
   
   sprintf(title,"nbjets_2lep_%s", plotName);
-  TH1F* histo_nbjets_2l = new TH1F( title, "Number of b-jets pt > 20", 20, 0, 20 );
+  TH1F* histo_nbjets_2l = new TH1F( title, "Number of b-jets pt > 20", 10, 0, 10 );
   histo_nbjets_2l->Sumw2();
   
   sprintf(title,"nleptons_2lep_%s", plotName);
   TH1F* histo_nleptons_2l = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
   histo_nleptons_2l->Sumw2();
 
-  
   sprintf(title,"njets_ss_%s", plotName);
   TH1F* histo_njets_ss = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
   histo_njets_ss->Sumw2();
   
   sprintf(title,"nbjets_ss_%s", plotName);
-  TH1F* histo_nbjets_ss = new TH1F( title, "Number of b-jets pt > 20", 20, 0, 20 );
+  TH1F* histo_nbjets_ss = new TH1F( title, "Number of b-jets pt > 20", 10, 0, 10 );
   histo_nbjets_ss->Sumw2();
   
   sprintf(title,"nleptons_ss_%s", plotName);
@@ -152,6 +151,26 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   sprintf(title,"met_%s", plotName);
   TH1F* histo_met = new TH1F( title, "Missing ET", 100, 0, 200 );
   histo_met->Sumw2();
+
+  sprintf(title,"njets_final_%s", plotName);
+  TH1F* histo_njets_final = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
+  histo_njets_final->Sumw2();
+  
+  sprintf(title,"nbjets_final_%s", plotName);
+  TH1F* histo_nbjets_final = new TH1F( title, "Number of b-jets pt > 20", 10, 0, 10 );
+  histo_nbjets_final->Sumw2();
+
+  sprintf(title,"pt_lep1_final_%s", plotName);
+  TH1F* histo_ptlep1_final = new TH1F( title, "Pt of the leading lepton", 100, 0, 200 );
+  histo_ptlep1_final->Sumw2();
+
+  sprintf(title,"pt_lep2_final_%s", plotName);
+  TH1F* histo_ptlep2_final = new TH1F( title, "Pt of the second lepton", 100, 0, 200 );
+  histo_ptlep2_final->Sumw2();
+
+  sprintf(title,"met_final_%s", plotName);
+  TH1F* histo_met_final = new TH1F( title, "Missing ET", 100, 0, 200 );
+  histo_met_final->Sumw2();
 
 
 
@@ -251,7 +270,7 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     if (lepton1.charge!=lepton2.charge) continue;
     histo->Fill(4., weight);
 
-         int njets_ss = 0;
+    int njets_ss = 0;
     for (int i = 0; i < preselected_jets->size() ; i++){
       ttH::Jet jet = preselected_jets->at(i);
       if (jet.tlv().Pt() < 20) continue;
@@ -301,6 +320,27 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     
     histo->Fill(7., weight);
    
+    histo_met_final->Fill(evmet.tlv().Pt(), weight);	      
+    histo_ptlep1_final->Fill(lepton1.tlv().Pt(), weight);
+    histo_ptlep2_final->Fill(lepton2.tlv().Pt(), weight);
+        
+   int njets_final = 0;
+    for (int i = 0; i < preselected_jets->size() ; i++){
+      ttH::Jet jet = preselected_jets->at(i);
+      if (jet.tlv().Pt() < 20) continue;
+      njets_final++;
+    }
+    histo_njets_final->Fill(njets_final, weight);
+    
+    
+    int nbjets_final = 0;
+    for (int i = 0; i < tight_bJets->size() ; i++){
+      ttH::Jet bjet = tight_bJets->at(i);
+      if (bjet.tlv().Pt() < 20) continue;
+      nbjets_final++;
+    }
+    histo_nbjets_final->Fill(nbjets_final, weight);
+    
   }
   
   
