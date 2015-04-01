@@ -11,6 +11,7 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   char plotName[300];
   sprintf(plotName,"test");
   if (nsel == 0) {sprintf(plotName,"ttH125");}
+  if (nsel == 1) {sprintf(plotName,"TTJets");}
   
   
   char myRootFile[300];
@@ -80,6 +81,8 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   tree->SetBranchAddress("met", &met, &b_met);
   ////
   
+  
+  cout <<"[Info:] You are running " << plotName << endl;
   if (mode != 0 && mode !=1 && mode !=2) mode = 0;
   if (!silent){
     cout << "[Info:]" ;
@@ -88,65 +91,65 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     else if (mode == 2) cout << " ee channel, " ;
   }
   char newRootFile[300];
-  sprintf(newRootFile,"results/output_%s_%d.root", plotName, mode);
-  TFile f_var(newRootFile, "RECREATE");
+  sprintf(newRootFile,"results/output_short_%d.root", mode);
+  TFile f_var(newRootFile, "UPDATE");
   if(!silent){
     std::cout << "results root file named " << newRootFile << std::endl;
-    std::cout << "[Info:] Everything made using preselected objects " << newRootFile << std::endl;
+    std::cout << "[Info:] Everything made using preselected objects " << std::endl;
   }
   
   // Histos
   char title[300];
-  sprintf(title,"cuts");
+  sprintf(title,"cuts_%s", plotName);
   TH1F* histo = new TH1F( title, "Cut Flow", 20, 0, 20 );
   histo->Sumw2();
   
-  sprintf(title,"njets");
+  sprintf(title,"njets_%s", plotName);
   TH1F* histo_njets = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
   histo_njets->Sumw2();
   
-  sprintf(title,"nbjets");
+  sprintf(title,"nbjets_%s", plotName);
   TH1F* histo_nbjets = new TH1F( title, "Number of b-jets pt > 20", 20, 0, 20 );
   histo_nbjets->Sumw2();
   
-  sprintf(title,"nleptons");
+  sprintf(title,"nleptons_%s", plotName);;
   TH1F* histo_nleptons = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
   histo_nleptons->Sumw2();
   
-  sprintf(title,"njets_2lep");
+  sprintf(title,"njets_2lep_%s", plotName);
   TH1F* histo_njets_2l = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
   histo_njets_2l->Sumw2();
   
-  sprintf(title,"nbjets_2lep");
+  sprintf(title,"nbjets_2lep_%s", plotName);
   TH1F* histo_nbjets_2l = new TH1F( title, "Number of b-jets pt > 20", 20, 0, 20 );
   histo_nbjets_2l->Sumw2();
   
-  sprintf(title,"nleptons_2lep");
+  sprintf(title,"nleptons_2lep_%s", plotName);
   TH1F* histo_nleptons_2l = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
   histo_nleptons_2l->Sumw2();
 
   
-  sprintf(title,"njets_ss");
+  sprintf(title,"njets_ss_%s", plotName);
   TH1F* histo_njets_ss = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
   histo_njets_ss->Sumw2();
   
-  sprintf(title,"nbjets_ss");
+  sprintf(title,"nbjets_ss_%s", plotName);
   TH1F* histo_nbjets_ss = new TH1F( title, "Number of b-jets pt > 20", 20, 0, 20 );
   histo_nbjets_ss->Sumw2();
   
-  sprintf(title,"nleptons_ss");
+  sprintf(title,"nleptons_ss_%s", plotName);
   TH1F* histo_nleptons_ss = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
   histo_nleptons_ss->Sumw2();
 
-  sprintf(title,"pt_lep1");
+  sprintf(title,"pt_lep1_%s", plotName);
   TH1F* histo_ptlep1 = new TH1F( title, "Pt of the leading lepton", 100, 0, 200 );
   histo_ptlep1->Sumw2();
 
-  sprintf(title,"pt_lep2");
+  sprintf(title,"pt_lep2_%s", plotName);
   TH1F* histo_ptlep2 = new TH1F( title, "Pt of the second lepton", 100, 0, 200 );
   histo_ptlep2->Sumw2();
 
-  sprintf(title,"met");
+  sprintf(title,"met_%s", plotName);
   TH1F* histo_met = new TH1F( title, "Missing ET", 100, 0, 200 );
   histo_met->Sumw2();
 
@@ -157,7 +160,8 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   int nused = 0;
   if (!silent) cout << "[Info:] Number of raw events: " << tree->GetEntries() << endl;
   // loop over events 
-  for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
+  for(int iEvent = 0; iEvent < 10000; iEvent++){
+  //  for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
     Long64_t tentry = tree->LoadTree(iEvent);
     //Point to the proper entry
     b_preselected_electrons->GetEntry(tentry);
@@ -174,7 +178,7 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
     //do stuff 
     histo->Fill(0., weight);
     
-    if (!higgs_decay) continue;
+    if (nsel ==0 && !higgs_decay) continue;
     histo->Fill(1., weight);
     
     int njets = 0;
