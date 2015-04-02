@@ -179,8 +179,8 @@ void minimal(int nsel=0, int mode=0, bool silent=0){
   int nused = 0;
   if (!silent) cout << "[Info:] Number of raw events: " << tree->GetEntries() << endl;
   // loop over events 
-  for(int iEvent = 0; iEvent < 10000; iEvent++){
-  //  for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
+  //for(int iEvent = 0; iEvent < 10000; iEvent++){
+  for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
     Long64_t tentry = tree->LoadTree(iEvent);
     //Point to the proper entry
     b_preselected_electrons->GetEntry(tentry);
