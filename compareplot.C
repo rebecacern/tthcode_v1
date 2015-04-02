@@ -4,7 +4,7 @@
 
 //#include "setTDRStyle.C"
  
-void compareplot(int mode = 2){
+void compareplot(int mode = 1){
   
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(0);
@@ -78,8 +78,8 @@ void compareplot(int mode = 2){
     leg->SetFillStyle(1001);
     leg->SetFillColor(kWhite);
     leg->SetBorderSize(1);
-    leg->AddEntry(h0[0][iPlot],  properLabel[1], "l");
-    leg->AddEntry(h0[1][iPlot],  properLabel[0], "l");
+    leg->AddEntry(h0[0][iPlot],  properLabel[0], "l");
+    leg->AddEntry(h0[1][iPlot],  properLabel[1], "l");
   
     leg->Draw();
     c1->SaveAs("plots/figure_" + finalState[mode] +"_"+ cutLabel[iPlot] +".png");
