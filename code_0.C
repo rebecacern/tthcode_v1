@@ -18,7 +18,6 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   sprintf(myRootFile,"../tuples/%s.root", plotName);
 
   TFile *fin = new TFile(myRootFile);
-  // TFile::Open("root://eoscms.cern.ch//eos/cms/store/user/gesmith/crabdir/v3/ttH125/multileptree_9_1_uB4.root"); 
 
   TTree *tree = (TTree*)fin->Get("OSTwoLepAna/summaryTree");
 
@@ -87,20 +86,13 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   ////
   
   
-  cout <<"[Info:] You are running " << plotName << endl;
+  cout <<"[Info:] You are running GEN code over " << plotName << endl;
   if (mode != 0 && mode !=1 && mode !=2) mode = 0;
-  if (!silent){
-    cout << "[Info:]" ;
-    if (mode == 0) cout << " emu channel, " ;
-    else if (mode == 1) cout << " mumu channel, " ;
-    else if (mode == 2) cout << " ee channel, " ;
-  }
   char newRootFile[300];
-  sprintf(newRootFile,"results/output_short_%d.root", mode);
-  TFile f_var(newRootFile, "UPDATE");
+  sprintf(newRootFile,"results/output_gen.root");
+  TFile f_var(newRootFile, "RECREATE");
   if(!silent){
     std::cout << "results root file named " << newRootFile << std::endl;
-    std::cout << "[Info:] Everything made using preselected objects " << std::endl;
   }
   
   // Histos
@@ -120,92 +112,108 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   sprintf(title,"nleptons_%s", plotName);;
   TH1F* histo_nleptons = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
   histo_nleptons->Sumw2();
-  
-  sprintf(title,"njets_2lep_%s", plotName);
-  TH1F* histo_njets_2l = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
-  histo_njets_2l->Sumw2();
-  
-  sprintf(title,"nbjets_2lep_%s", plotName);
-  TH1F* histo_nbjets_2l = new TH1F( title, "Number of b-jets pt > 20", 10, 0, 10 );
-  histo_nbjets_2l->Sumw2();
-  
-  sprintf(title,"nleptons_2lep_%s", plotName);
-  TH1F* histo_nleptons_2l = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
-  histo_nleptons_2l->Sumw2();
-
-  sprintf(title,"njets_ss_%s", plotName);
-  TH1F* histo_njets_ss = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
-  histo_njets_ss->Sumw2();
-  
-  sprintf(title,"nbjets_ss_%s", plotName);
-  TH1F* histo_nbjets_ss = new TH1F( title, "Number of b-jets pt > 20", 10, 0, 10 );
-  histo_nbjets_ss->Sumw2();
-  
-  sprintf(title,"nleptons_ss_%s", plotName);
-  TH1F* histo_nleptons_ss = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
-  histo_nleptons_ss->Sumw2();
-
-  sprintf(title,"pt_lep1_%s", plotName);
-  TH1F* histo_ptlep1 = new TH1F( title, "Pt of the leading lepton", 100, 0, 200 );
-  histo_ptlep1->Sumw2();
-
-  sprintf(title,"pt_lep2_%s", plotName);
-  TH1F* histo_ptlep2 = new TH1F( title, "Pt of the second lepton", 100, 0, 200 );
-  histo_ptlep2->Sumw2();
-
+ 
   sprintf(title,"met_%s", plotName);
   TH1F* histo_met = new TH1F( title, "Missing ET", 100, 0, 200 );
   histo_met->Sumw2();
 
-  sprintf(title,"njets_final_%s", plotName);
-  TH1F* histo_njets_final = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
-  histo_njets_final->Sumw2();
   
-  sprintf(title,"nbjets_final_%s", plotName);
-  TH1F* histo_nbjets_final = new TH1F( title, "Number of b-jets pt > 20", 10, 0, 10 );
-  histo_nbjets_final->Sumw2();
-
-  sprintf(title,"pt_lep1_final_%s", plotName);
-  TH1F* histo_ptlep1_final = new TH1F( title, "Pt of the leading lepton", 100, 0, 200 );
-  histo_ptlep1_final->Sumw2();
-
-  sprintf(title,"pt_lep2_final_%s", plotName);
-  TH1F* histo_ptlep2_final = new TH1F( title, "Pt of the second lepton", 100, 0, 200 );
-  histo_ptlep2_final->Sumw2();
-
-  sprintf(title,"met_final_%s", plotName);
-  TH1F* histo_met_final = new TH1F( title, "Missing ET", 100, 0, 200 );
-  histo_met_final->Sumw2();
-
-
-
  
   double weight = 1;
   int nused = 0;
+  int nHWW = 0;
+  int nHZZ = 0;
   if (!silent) cout << "[Info:] Number of raw events: " << tree->GetEntries() << endl;
   // loop over events 
-  //for(int iEvent = 0; iEvent < 10000; iEvent++){
+  //for(int iEvent = 0; iEvent < 1000; iEvent++){
   for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
     Long64_t tentry = tree->LoadTree(iEvent);
     //Point to the proper entry
-    b_preselected_electrons->GetEntry(tentry);
+     b_higgs_decay->GetEntry(tentry);
+     b_pruned_genParticles->GetEntry(tentry);
+     
+     
+  /*  b_preselected_electrons->GetEntry(tentry);
     b_preselected_muons->GetEntry(tentry);
     b_preselected_leptons->GetEntry(tentry);
     b_preselected_jets->GetEntry(tentry);
-    b_higgs_decay->GetEntry(tentry);
+   
     b_tightMvaBased_electrons->GetEntry(tentry);
     b_tightMvaBased_muons->GetEntry(tentry);
     b_tightMvaBased_leptons->GetEntry(tentry);
     b_tight_bJets->GetEntry(tentry);
-    b_met->GetEntry(tentry);
-    b_pruned_genParticles->GetEntry(tentry);
-     
-    //do stuff 
+    b_met->GetEntry(tentry);*/
+   
+    
+    
+    nused++; 
+
     histo->Fill(0., weight);
     
     if (nsel ==0 && !higgs_decay) continue;
     histo->Fill(1., weight);
     
+    bool HWW = false;
+    bool HZZ = false;
+    int n_W_plus = 0;
+    int n_W_minus = 0;
+    int n_Z = 0;
+    bool HW_plus_lepton = false;
+    bool HW_minus_lepton = false;
+   
+    for (int i = 0; i < pruned_genParticles->size(); i++){
+      ttH::GenParticle genpar = pruned_genParticles->at(i);
+      if (genpar.pdgID == 24){
+        if (genpar.mother !=9999){
+        ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
+	if (mamapar.pdgID == 25){
+	  n_W_plus++;  
+	  if (genpar.child0 != 9999 && genpar.child1 != 9999) {
+	    ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
+	    ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
+	    if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) HW_plus_lepton = true;
+	  }
+	}
+	}
+      }
+      
+      if (genpar.pdgID == -24){
+        if (genpar.mother !=9999){
+        ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
+	if (mamapar.pdgID == 25){
+	  n_W_minus++; 
+	  if (genpar.child0 != 9999 && genpar.child1 != 9999) {
+	    ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
+	    ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
+	     if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) HW_minus_lepton = true;
+	  }
+	}
+	}
+      }
+      if (genpar.pdgID == 23){
+        if (genpar.mother !=9999){
+        ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
+	if (mamapar.pdgID == 25)  n_Z++; 
+      }
+      }
+      
+    }
+    if (nsel ==0 && n_W_plus == 1 && n_W_minus == 1) HWW = true;
+    else if (nsel ==0 && n_Z == 2) HZZ = true;  
+   
+    if (nsel ==0 && HWW && HZZ) cout << "[Info:] You are doing something wrong, you cannot have HWW and HZZ in the same event" << endl;
+   /* if (HWW && HW_plus_lepton && HW_minus_lepton) cout << "Event " << iEvent << " fully leptonic " << endl;
+    else if (HWW && HW_plus_lepton ) cout << "Event " << iEvent << " semi leptonic " << endl;
+    else if (HWW && HW_minus_lepton ) cout << "Event " << iEvent << " semi leptonic " << endl;*/
+    
+    if (nsel ==0 && HWW) nHWW++;
+    else if (nsel ==0 && HZZ) nHZZ++;
+
+    if (nsel ==0 && !HWW && !HZZ) continue;
+    histo->Fill(2., weight);
+    
+    
+    /*
     int njets = 0;
     for (int i = 0; i < preselected_jets->size() ; i++){
       ttH::Jet jet = preselected_jets->at(i);
@@ -230,128 +238,7 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
       nleptons++;
     }
     histo_nleptons->Fill(nleptons, weight);
-    
-    
-    
-    if (preselected_leptons->size() < 2) continue;
-    histo->Fill(2., weight);
-    
- 
-    ttH::Lepton lepton1 = preselected_leptons->at(0);
-    ttH::Lepton lepton2 = preselected_leptons->at(1);
-    
-    if (mode == 0 && abs(lepton1.pdgID) ==  abs(lepton2.pdgID)) continue;
-    if (mode == 1 && (abs(lepton1.pdgID) != 13 ||  abs(lepton2.pdgID) != 13)) continue;
-    if (mode == 2 && (abs(lepton1.pdgID) != 11 ||  abs(lepton2.pdgID) != 11)) continue;
-    histo->Fill(3., weight);
-   
-     int njets_2l = 0;
-    for (int i = 0; i < preselected_jets->size() ; i++){
-      ttH::Jet jet = preselected_jets->at(i);
-      if (jet.tlv().Pt() < 20) continue;
-      njets_2l++;
-    }
-    histo_njets_2l->Fill(njets_2l, weight);
-    
-    
-    int nbjets_2l = 0;
-    for (int i = 0; i < tight_bJets->size() ; i++){
-      ttH::Jet bjet = tight_bJets->at(i);
-      if (bjet.tlv().Pt() < 20) continue;
-      nbjets_2l++;
-    }
-    histo_nbjets_2l->Fill(nbjets_2l, weight);
-    
-    int nleptons_2l = 0;
-    for (int i = 0; i < preselected_leptons->size() ; i++){
-      ttH::Lepton lep0 = preselected_leptons->at(i);
-      if (lep0.tlv().Pt() < 10) continue;
-      nleptons_2l++;
-    }
-    histo_nleptons_2l->Fill(nleptons_2l, weight);
-    
-    
-
-
-    if (lepton1.charge!=lepton2.charge) continue;
-    histo->Fill(4., weight);
-
-    int njets_ss = 0;
-    for (int i = 0; i < preselected_jets->size() ; i++){
-      ttH::Jet jet = preselected_jets->at(i);
-      if (jet.tlv().Pt() < 20) continue;
-      njets_ss++;
-    }
-    histo_njets_ss->Fill(njets_ss, weight);
-    
-    
-    int nbjets_ss = 0;
-    for (int i = 0; i < tight_bJets->size() ; i++){
-      ttH::Jet bjet = tight_bJets->at(i);
-      if (bjet.tlv().Pt() < 20) continue;
-      nbjets_ss++;
-    }
-    histo_nbjets_ss->Fill(nbjets_ss, weight);
-    
-    int nleptons_ss = 0;
-    for (int i = 0; i < preselected_leptons->size() ; i++){
-      ttH::Lepton lep0 = preselected_leptons->at(i);
-      if (lep0.tlv().Pt() < 10) continue;
-      nleptons_ss++;
-    }
-    histo_nleptons_ss->Fill(nleptons_ss, weight);
-    
-    ttH::MET evmet = met->at(0);
-    histo_met->Fill(evmet.tlv().Pt(), weight);	      
-    histo_ptlep1->Fill(lepton1.tlv().Pt(), weight);
-    histo_ptlep2->Fill(lepton2.tlv().Pt(), weight);
-        
-	      
-	      
-    if (lepton1.tlv().Pt() <= 20) continue;
-    if (lepton2.tlv().Pt() <= 20)  continue;
-   
-    histo->Fill(5., weight);
-    
-
-    if (tightMvaBased_leptons->size() != 2) continue;
-  
-    ttH::Lepton tlepton1 = tightMvaBased_leptons->at(0);
-    ttH::Lepton tlepton2 = tightMvaBased_leptons->at(1);
-    
-    histo->Fill(6., weight);
-    
-    if (lepton1.tlv().Pt()  != tlepton1.tlv().Pt()) continue;
-    if (lepton2.tlv().Pt()  != tlepton2.tlv().Pt()) continue;
-    
-    histo->Fill(7., weight);
-   
-    histo_met_final->Fill(evmet.tlv().Pt(), weight);	      
-    histo_ptlep1_final->Fill(lepton1.tlv().Pt(), weight);
-    histo_ptlep2_final->Fill(lepton2.tlv().Pt(), weight);
-        
-   int njets_final = 0;
-    for (int i = 0; i < preselected_jets->size() ; i++){
-      ttH::Jet jet = preselected_jets->at(i);
-      if (jet.tlv().Pt() < 20) continue;
-      njets_final++;
-    }
-    histo_njets_final->Fill(njets_final, weight);
-    
-    
-    int nbjets_final = 0;
-    for (int i = 0; i < tight_bJets->size() ; i++){
-      ttH::Jet bjet = tight_bJets->at(i);
-      if (bjet.tlv().Pt() < 20) continue;
-      nbjets_final++;
-    }
-    histo_nbjets_final->Fill(nbjets_final, weight);
-  
-  
-    for (int i = 0; i < pruned_genParticles->size(); i++){
-      ttH::GenParticle genpar = pruned_genParticles->at(i);
-     // if (genpar.pdgID == 24) cout << "Here is a W+" << endl;
-    }
+    */
   
     
   }
@@ -368,18 +255,19 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   
   if (!silent){
     cout << "------------------------------------------" << endl;
-    cout << "[Results:] preselected leptons " << label << endl;
+    cout << "[Results:] GEN only " << label << endl;
     cout << "------------------------------------------" << endl;
     for (int i = 1; i < 9; i++){
       if (i == 1) cout << " all: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 2) cout << " higgs decay: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 3) cout << " 2+ preselected leptons: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 3) cout << " HWW or HZZ: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 4) cout << " decay to " << label << ": " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 5) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 6) cout << " pt > 20,20: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 7) cout << " 2 tight: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 8) cout << " 2 tight corresponding with the presel: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
    }
+   cout << nHWW*100/nused << "% of HWW, " << nHZZ*100/nused << "% of HZZ in the events" << endl;
     cout << "------------------------------------------" << endl;
 
 
