@@ -141,20 +141,20 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
     Long64_t tentry = tree->LoadTree(iEvent);
     //Point to the proper entry
-     b_higgs_decay->GetEntry(tentry);
-     b_pruned_genParticles->GetEntry(tentry);
+    b_higgs_decay->GetEntry(tentry);
+    b_pruned_genParticles->GetEntry(tentry);
      
      
-  /*  b_preselected_electrons->GetEntry(tentry);
-    b_preselected_muons->GetEntry(tentry);
-    b_preselected_leptons->GetEntry(tentry);
-    b_preselected_jets->GetEntry(tentry);
+    /*  b_preselected_electrons->GetEntry(tentry);
+	b_preselected_muons->GetEntry(tentry);
+	b_preselected_leptons->GetEntry(tentry);
+	b_preselected_jets->GetEntry(tentry);
    
-    b_tightMvaBased_electrons->GetEntry(tentry);
-    b_tightMvaBased_muons->GetEntry(tentry);
-    b_tightMvaBased_leptons->GetEntry(tentry);
-    b_tight_bJets->GetEntry(tentry);
-    b_met->GetEntry(tentry);*/
+	b_tightMvaBased_electrons->GetEntry(tentry);
+	b_tightMvaBased_muons->GetEntry(tentry);
+	b_tightMvaBased_leptons->GetEntry(tentry);
+	b_tight_bJets->GetEntry(tentry);
+	b_met->GetEntry(tentry);*/
    
     
     
@@ -182,58 +182,58 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
       ttH::GenParticle genpar = pruned_genParticles->at(i);
       if (genpar.pdgID == 24){
         if (genpar.mother !=9999){
-        ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
-	if (mamapar.pdgID == 25){
-	  n_W_plus++;  
-	  if (genpar.child0 != 9999 && genpar.child1 != 9999) {
-	    ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
-	    ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
-	    if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) { HW_plus_lepton = true; indexes[0] = genpar.child0;}
-	    else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13){ HW_plus_lepton = true; indexes[0] = genpar.child1;}
-	    else {indexes[6] = genpar.child0; indexes[7] = genpar.child1;}
-	  }
-	} else if (mamapar.pdgID == 6){
-	  n_tW_plus++;  
-	  if (genpar.child0 != 9999 && genpar.child1 != 9999) {
-	    ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
-	    ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
-	    if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child0; indexes[2]=genpar.mother;}
-	    else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child1; indexes[2]=genpar.mother;}
-	    else {indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
-	  }
-	} 
+	  ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
+	  if (mamapar.pdgID == 25){
+	    n_W_plus++;  
+	    if (genpar.child0 != 9999 && genpar.child1 != 9999) {
+	      ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
+	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
+	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) { HW_plus_lepton = true; indexes[0] = genpar.child0;}
+	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13){ HW_plus_lepton = true; indexes[0] = genpar.child1;}
+	      else {indexes[6] = genpar.child0; indexes[7] = genpar.child1;}
+	    }
+	  } else if (mamapar.pdgID == 6){
+	    n_tW_plus++;  
+	    if (genpar.child0 != 9999 && genpar.child1 != 9999) {
+	      ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
+	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
+	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child0; indexes[2]=genpar.mother;}
+	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child1; indexes[2]=genpar.mother;}
+	      else {indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
+	    }
+	  } 
 	}
       }
       
       if (genpar.pdgID == -24){
         if (genpar.mother !=9999){
-        ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
-	if (mamapar.pdgID == 25){
-	  n_W_minus++; 
-	  if (genpar.child0 != 9999 && genpar.child1 != 9999) {
-	    ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
-	    ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
-	     if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {HW_minus_lepton = true; indexes[0] = genpar.child0;}
-	     if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {HW_minus_lepton = true; indexes[0] = genpar.child1;}
-	    else {indexes[6] = genpar.child0; indexes[7] = genpar.child1;}
+	  ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
+	  if (mamapar.pdgID == 25){
+	    n_W_minus++; 
+	    if (genpar.child0 != 9999 && genpar.child1 != 9999) {
+	      ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
+	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
+	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {HW_minus_lepton = true; indexes[0] = genpar.child0;}
+	      if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {HW_minus_lepton = true; indexes[0] = genpar.child1;}
+	      else {indexes[6] = genpar.child0; indexes[7] = genpar.child1;}
+	    }
+	  } else if (mamapar.pdgID == -6){
+	    n_tW_minus++; 
+	    if (genpar.child0 != 9999 && genpar.child1 != 9999) {
+	      ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
+	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
+	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child0; indexes[2]=genpar.mother;}
+	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child1; indexes[2]=genpar.mother;}
+	      else {indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
+	    }
 	  }
-	} else if (mamapar.pdgID == -6){
-	  n_tW_minus++; 
-	  if (genpar.child0 != 9999 && genpar.child1 != 9999) {
-	    ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
-	    ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
-	     if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child0; indexes[2]=genpar.mother;}
-	     else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child1; indexes[2]=genpar.mother;}
-	    else {indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
-	  }
-	}
 	}
       }
       if (genpar.pdgID == 23){
         if (genpar.mother !=9999){
-        ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
-	if (mamapar.pdgID == 25)  n_Z++; 
-      }
+	  ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
+	  if (mamapar.pdgID == 25)  n_Z++; 
+	}
       }
       
     }
@@ -259,51 +259,51 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
     ttH::GenParticle lep2 = pruned_genParticles->at(indexes[1]);
 
     if (lep1.pdgID*lep2.pdgID < 1) continue;
-     histo->Fill(5., weight);
+    histo->Fill(5., weight);
    
-   bool index_prop = true;
-   for (int i =0; i<8; i++){
- if (indexes [i] == -1) index_prop = false;}
-   if (!index_prop) continue;
+    bool index_prop = true;
+    for (int i =0; i<8; i++){
+      if (indexes [i] == -1) index_prop = false;}
+    if (!index_prop) continue;
    
-       histo->Fill(6., weight);
+    histo->Fill(6., weight);
 
-TVector3 vlep1(lep1.tlv().Px(), lep1.tlv().Py(), lep1.tlv().Pz());
-TVector3 vlep2(lep2.tlv().Px(), lep2.tlv().Py(), lep2.tlv().Pz());
-ttH::GenParticle q1 = pruned_genParticles->at(indexes[6]);
-ttH::GenParticle q2 = pruned_genParticles->at(indexes[7]);
-TVector3 vq1(q1.tlv().Px(), q1.tlv().Py(), q1.tlv().Pz());
-TVector3 vq2(q2.tlv().Px(), q2.tlv().Py(), q2.tlv().Pz());
+    TVector3 vlep1(lep1.tlv().Px(), lep1.tlv().Py(), lep1.tlv().Pz());
+    TVector3 vlep2(lep2.tlv().Px(), lep2.tlv().Py(), lep2.tlv().Pz());
+    ttH::GenParticle q1 = pruned_genParticles->at(indexes[6]);
+    ttH::GenParticle q2 = pruned_genParticles->at(indexes[7]);
+    TVector3 vq1(q1.tlv().Px(), q1.tlv().Py(), q1.tlv().Pz());
+    TVector3 vq2(q2.tlv().Px(), q2.tlv().Py(), q2.tlv().Pz());
 
-histo_dr->Fill(vlep1.DeltaR(vlep2), weight);
-histo_dr_hwwqq->Fill(vq1.DeltaR(vq2), weight);
-histo_dr_hwwlq->Fill(TMath::Min(vq1.DeltaR(vlep1),vq2.DeltaR(vlep1)), weight);
+    histo_dr->Fill(vlep1.DeltaR(vlep2), weight);
+    histo_dr_hwwqq->Fill(vq1.DeltaR(vq2), weight);
+    histo_dr_hwwlq->Fill(TMath::Min(vq1.DeltaR(vlep1),vq2.DeltaR(vlep1)), weight);
     
     /*
-    int njets = 0;
-    for (int i = 0; i < preselected_jets->size() ; i++){
+      int njets = 0;
+      for (int i = 0; i < preselected_jets->size() ; i++){
       ttH::Jet jet = preselected_jets->at(i);
       if (jet.tlv().Pt() < 20) continue;
       njets++;
-    }
-    histo_njets->Fill(njets, weight);
+      }
+      histo_njets->Fill(njets, weight);
     
     
-    int nbjets = 0;
-    for (int i = 0; i < tight_bJets->size() ; i++){
+      int nbjets = 0;
+      for (int i = 0; i < tight_bJets->size() ; i++){
       ttH::Jet bjet = tight_bJets->at(i);
       if (bjet.tlv().Pt() < 20) continue;
       nbjets++;
-    }
-    histo_nbjets->Fill(nbjets, weight);
+      }
+      histo_nbjets->Fill(nbjets, weight);
     
-    int nleptons = 0;
-    for (int i = 0; i < preselected_leptons->size() ; i++){
+      int nleptons = 0;
+      for (int i = 0; i < preselected_leptons->size() ; i++){
       ttH::Lepton lep0 = preselected_leptons->at(i);
       if (lep0.tlv().Pt() < 10) continue;
       nleptons++;
-    }
-    histo_nleptons->Fill(nleptons, weight);
+      }
+      histo_nleptons->Fill(nleptons, weight);
     */
   
     
@@ -332,8 +332,8 @@ histo_dr_hwwlq->Fill(TMath::Min(vq1.DeltaR(vlep1),vq2.DeltaR(vlep1)), weight);
       if (i == 6) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 7) cout << " proper index: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 8) cout << " 2 tight corresponding with the presel: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-   }
-   cout << nHWW*100/nused << "% of HWW, " << nHZZ*100/nused << "% of HZZ in the events" << endl;
+    }
+    cout << nHWW*100/nused << "% of HWW, " << nHZZ*100/nused << "% of HZZ in the events" << endl;
     cout << "------------------------------------------" << endl;
 
 
