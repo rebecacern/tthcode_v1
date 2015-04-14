@@ -58,7 +58,7 @@ void code_0(int nsel=0, bool silent=0){
   
   cout <<"[Info:] You are running GEN code over " << plotName << endl;
   char newRootFile[300];
-  sprintf(newRootFile,"results/output_gen.root");
+  sprintf(newRootFile,"results/output_gen_noptcuts.root");
   TFile f_var(newRootFile, "RECREATE");
   if(!silent){
     std::cout << "[Info:] results root file named " << newRootFile << std::endl;
@@ -79,8 +79,30 @@ void code_0(int nsel=0, bool silent=0){
   histo_dr_hwwqq->Sumw2();
  
   sprintf(title,"deltaR_lq_%s", plotName);
-  TH1F* histo_dr_hwwlq = new TH1F( title, "#Delta R between HWW lepton and closest quark", 100, 0, 5 );
+  TH1F* histo_dr_hwwlq = new TH1F( title, "#Delta R between HWW lepton and closest HWW quark", 100, 0, 5 );
   histo_dr_hwwlq->Sumw2();
+ 
+  sprintf(title,"deltaR_l_q_%s", plotName);
+  TH1F* histo_dr_hwwl_q = new TH1F( title, "#Delta R between HWW lepton and closest light quark", 100, 0, 5 );
+  histo_dr_hwwl_q->Sumw2();
+ 
+  sprintf(title,"deltaR_toplq_%s", plotName);
+  TH1F* histo_dr_toplq = new TH1F( title, "#Delta R between top lepton and closest top light quark", 100, 0, 5 );
+  histo_dr_toplq->Sumw2();
+ 
+  sprintf(title,"deltaR_topl_q_%s", plotName);
+  TH1F* histo_dr_topl_q = new TH1F( title, "#Delta R between top lepton and closest light quark", 100, 0, 5 );
+  histo_dr_topl_q->Sumw2();
+ 
+  sprintf(title,"deltaR_hwwlb_%s", plotName);
+  TH1F* histo_dr_hwwlb = new TH1F( title, "#Delta R between HWW lepton and closest b quark", 100, 0, 5 );
+  histo_dr_hwwlb->Sumw2();
+ 
+  sprintf(title,"deltaR_toplb_%s", plotName);
+  TH1F* histo_dr_toplb = new TH1F( title, "#Delta R between top lepton and its b quark", 100, 0, 5 );
+  histo_dr_toplb->Sumw2();
+
+
 
   
  
@@ -90,8 +112,8 @@ void code_0(int nsel=0, bool silent=0){
   int nHZZ = 0;
   if (!silent) cout << "[Info:] Number of raw events: " << tree->GetEntries() << endl;
   // loop over events 
-  for(int iEvent = 0; iEvent < 1000; iEvent++){
-  //for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
+ // for(int iEvent = 0; iEvent < 1000; iEvent++){
+  for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
     Long64_t tentry = tree->LoadTree(iEvent);
     //Point to the proper entry
     b_higgs_decay->GetEntry(tentry);
@@ -201,48 +223,53 @@ void code_0(int nsel=0, bool silent=0){
     }
     cout << endl;  
     */
-
+    
+    //leptons
     TVector3 vlep1(lep1.tlv().Px(), lep1.tlv().Py(), lep1.tlv().Pz());
     TVector3 vlep2(lep2.tlv().Px(), lep2.tlv().Py(), lep2.tlv().Pz());
+    
+    //quarks
     ttH::GenParticle qw1 = pruned_genParticles->at(indexes[6]);
     ttH::GenParticle qw2 = pruned_genParticles->at(indexes[7]);
     TVector3 vqw1(qw1.tlv().Px(), qw1.tlv().Py(), qw1.tlv().Pz());
     TVector3 vqw2(qw2.tlv().Px(), qw2.tlv().Py(), qw2.tlv().Pz());
+    
+    ttH::GenParticle qt1 = pruned_genParticles->at(indexes[4]);
+    ttH::GenParticle qt2 = pruned_genParticles->at(indexes[5]);
+    TVector3 vqt1(qt1.tlv().Px(), qt1.tlv().Py(), qt1.tlv().Pz());
+    TVector3 vqt2(qt2.tlv().Px(), qt2.tlv().Py(), qt2.tlv().Pz());
 
+
+    // Filling histos
     histo_dr->Fill(vlep1.DeltaR(vlep2), weight);
     histo_dr_hwwqq->Fill(vqw1.DeltaR(vqw2), weight);
     histo_dr_hwwlq->Fill(TMath::Min(vqw1.DeltaR(vlep1),vqw2.DeltaR(vlep1)), weight);
     
+    float mindr = TMath::Min(vqw1.DeltaR(vlep1),vqw2.DeltaR(vlep1));
+    mindr = TMath::Min(mindr,vqt1.DeltaR(vlep1));
+    mindr = TMath::Min(mindr,vqt2.DeltaR(vlep1));
+    histo_dr_hwwl_q->Fill(mindr, weight);
     
+    histo_dr_toplq->Fill(TMath::Min(vqt1.DeltaR(vlep2),vqt2.DeltaR(vlep2)), weight);
     
+    float mindr_t = TMath::Min(vqt1.DeltaR(vlep2),vqt2.DeltaR(vlep2));
+    mindr_t = TMath::Min(mindr_t,vqw1.DeltaR(vlep2));
+    mindr_t = TMath::Min(mindr_t,vqw2.DeltaR(vlep2));
+    histo_dr_topl_q->Fill(mindr_t, weight);
     
-    /*
-      int njets = 0;
-      for (int i = 0; i < preselected_jets->size() ; i++){
-      ttH::Jet jet = preselected_jets->at(i);
-      if (jet.tlv().Pt() < 20) continue;
-      njets++;
-      }
-      histo_njets->Fill(njets, weight);
+    //b quarks
+    ttH::GenParticle qb1 = pruned_genParticles->at(indexes[2]);
+    ttH::GenParticle qb2 = pruned_genParticles->at(indexes[3]);
+    TVector3 vqb1(qb1.tlv().Px(), qb1.tlv().Py(), qb1.tlv().Pz());
+    TVector3 vqb2(qb2.tlv().Px(), qb2.tlv().Py(), qb2.tlv().Pz());
     
+    histo_dr_hwwlb->Fill(TMath::Min(vqb1.DeltaR(vlep1),vqb2.DeltaR(vlep1)), weight);
+    histo_dr_toplb->Fill(vqb2.DeltaR(vlep2), weight);
     
-      int nbjets = 0;
-      for (int i = 0; i < tight_bJets->size() ; i++){
-      ttH::Jet bjet = tight_bJets->at(i);
-      if (bjet.tlv().Pt() < 20) continue;
-      nbjets++;
-      }
-      histo_nbjets->Fill(nbjets, weight);
+    if (mindr > 0.3) continue;
+    histo->Fill(7., weight); 
     
-      int nleptons = 0;
-      for (int i = 0; i < preselected_leptons->size() ; i++){
-      ttH::Lepton lep0 = preselected_leptons->at(i);
-      if (lep0.tlv().Pt() < 10) continue;
-      nleptons++;
-      }
-      histo_nleptons->Fill(nleptons, weight);
-    */
-  
+     
     
   }
   
@@ -261,6 +288,7 @@ void code_0(int nsel=0, bool silent=0){
       if (i == 5) cout << " Semileptonic tt: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 6) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 7) cout << " proper index: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 8) cout << " DR HWW and closest LF q < 0.3: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
     }
     cout << "------------------------------------------" << endl;
     cout << "[Info:]" << nHWW*100/nused << "% of HWW in the events" << endl;
