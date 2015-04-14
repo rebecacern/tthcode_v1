@@ -100,33 +100,18 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   sprintf(title,"cuts_%s", plotName);
   TH1F* histo = new TH1F( title, "Cut Flow", 20, 0, 20 );
   histo->Sumw2();
-  
-  sprintf(title,"njets_%s", plotName);
-  TH1F* histo_njets = new TH1F( title, "Number of jets pt > 20", 20, 0, 20 );
-  histo_njets->Sumw2();
-  
-  sprintf(title,"nbjets_%s", plotName);
-  TH1F* histo_nbjets = new TH1F( title, "Number of b-jets pt > 20", 10, 0, 10 );
-  histo_nbjets->Sumw2();
-  
-  sprintf(title,"nleptons_%s", plotName);;
-  TH1F* histo_nleptons = new TH1F( title, "Number of leptons pt > 10", 20, 0, 20 );
-  histo_nleptons->Sumw2();
  
-  sprintf(title,"met_%s", plotName);
-  TH1F* histo_met = new TH1F( title, "Missing ET", 100, 0, 200 );
-  histo_met->Sumw2();
  
   sprintf(title,"deltaR_%s", plotName);
-  TH1F* histo_dr = new TH1F( title, "#Delta R between SS leptons", 100, -5, 5 );
+  TH1F* histo_dr = new TH1F( title, "#Delta R between SS leptons", 100, 0, 5 );
   histo_dr->Sumw2();
  
   sprintf(title,"deltaR_qq_%s", plotName);
-  TH1F* histo_dr_hwwqq = new TH1F( title, "#Delta R between HWW LF quarks", 100, -5, 5 );
+  TH1F* histo_dr_hwwqq = new TH1F( title, "#Delta R between HWW LF quarks", 100, 0, 5 );
   histo_dr_hwwqq->Sumw2();
  
   sprintf(title,"deltaR_lq_%s", plotName);
-  TH1F* histo_dr_hwwlq = new TH1F( title, "#Delta R between HWW lepton and closest quark", 100, -5, 5 );
+  TH1F* histo_dr_hwwlq = new TH1F( title, "#Delta R between HWW lepton and closest quark", 100, 0, 5 );
   histo_dr_hwwlq->Sumw2();
 
   
@@ -137,8 +122,8 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   int nHZZ = 0;
   if (!silent) cout << "[Info:] Number of raw events: " << tree->GetEntries() << endl;
   // loop over events 
-  //for(int iEvent = 0; iEvent < 1000; iEvent++){
-  for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
+  for(int iEvent = 0; iEvent < 1000; iEvent++){
+  //for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
     Long64_t tentry = tree->LoadTree(iEvent);
     //Point to the proper entry
     b_higgs_decay->GetEntry(tentry);
@@ -190,7 +175,7 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
 	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
 	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) { HW_plus_lepton = true; indexes[0] = genpar.child0;}
 	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13){ HW_plus_lepton = true; indexes[0] = genpar.child1;}
-	      else {indexes[6] = genpar.child0; indexes[7] = genpar.child1;}
+	      else if (abs(child_1.pdgID) <5  &&  abs(child_2.pdgID) <5){indexes[6] = genpar.child0; indexes[7] = genpar.child1;}
 	    }
 	  } else if (mamapar.pdgID == 6){
 	    n_tW_plus++;  
@@ -199,7 +184,7 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
 	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
 	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child0; indexes[2]=genpar.mother;}
 	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child1; indexes[2]=genpar.mother;}
-	      else {indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
+	      else if (abs(child_1.pdgID) <5  &&  abs(child_2.pdgID) <5){indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
 	    }
 	  } 
 	}
@@ -215,7 +200,7 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
 	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
 	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {HW_minus_lepton = true; indexes[0] = genpar.child0;}
 	      if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {HW_minus_lepton = true; indexes[0] = genpar.child1;}
-	      else {indexes[6] = genpar.child0; indexes[7] = genpar.child1;}
+	      else if (abs(child_1.pdgID) <5  &&  abs(child_2.pdgID) <5) {indexes[6] = genpar.child0; indexes[7] = genpar.child1;}
 	    }
 	  } else if (mamapar.pdgID == -6){
 	    n_tW_minus++; 
@@ -224,7 +209,7 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
 	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
 	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child0; indexes[2]=genpar.mother;}
 	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child1; indexes[2]=genpar.mother;}
-	      else {indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
+	      else if (abs(child_1.pdgID) <5  &&  abs(child_2.pdgID) <5){indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
 	    }
 	  }
 	}
@@ -265,19 +250,31 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
     for (int i =0; i<8; i++){
       if (indexes [i] == -1) index_prop = false;}
     if (!index_prop) continue;
-   
+    
     histo->Fill(6., weight);
+
+   /*
+    cout << iEvent << endl;
+    for (int i =0; i<8; i++){
+      ttH::GenParticle q = pruned_genParticles->at(indexes[i]);
+      cout << " - " << q.pdgID ;
+    }
+    cout << endl;  
+    */
 
     TVector3 vlep1(lep1.tlv().Px(), lep1.tlv().Py(), lep1.tlv().Pz());
     TVector3 vlep2(lep2.tlv().Px(), lep2.tlv().Py(), lep2.tlv().Pz());
-    ttH::GenParticle q1 = pruned_genParticles->at(indexes[6]);
-    ttH::GenParticle q2 = pruned_genParticles->at(indexes[7]);
-    TVector3 vq1(q1.tlv().Px(), q1.tlv().Py(), q1.tlv().Pz());
-    TVector3 vq2(q2.tlv().Px(), q2.tlv().Py(), q2.tlv().Pz());
+    ttH::GenParticle qw1 = pruned_genParticles->at(indexes[6]);
+    ttH::GenParticle qw2 = pruned_genParticles->at(indexes[7]);
+    TVector3 vqw1(qw1.tlv().Px(), qw1.tlv().Py(), qw1.tlv().Pz());
+    TVector3 vqw2(qw2.tlv().Px(), qw2.tlv().Py(), qw2.tlv().Pz());
 
     histo_dr->Fill(vlep1.DeltaR(vlep2), weight);
-    histo_dr_hwwqq->Fill(vq1.DeltaR(vq2), weight);
-    histo_dr_hwwlq->Fill(TMath::Min(vq1.DeltaR(vlep1),vq2.DeltaR(vlep1)), weight);
+    histo_dr_hwwqq->Fill(vqw1.DeltaR(vqw2), weight);
+    histo_dr_hwwlq->Fill(TMath::Min(vqw1.DeltaR(vlep1),vqw2.DeltaR(vlep1)), weight);
+    
+    
+    
     
     /*
       int njets = 0;
@@ -333,8 +330,9 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
       if (i == 7) cout << " proper index: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 8) cout << " 2 tight corresponding with the presel: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
     }
-    cout << nHWW*100/nused << "% of HWW, " << nHZZ*100/nused << "% of HZZ in the events" << endl;
     cout << "------------------------------------------" << endl;
+    cout << "[Info:]" << nHWW*100/nused << "% of HWW, " << nHZZ*100/nused << "% of HZZ in the events" << endl;
+  
 
 
 
