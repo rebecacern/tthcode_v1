@@ -58,7 +58,7 @@ void code_0(int nsel=0, bool silent=0){
   
   cout <<"[Info:] You are running GEN code over " << plotName << endl;
   char newRootFile[300];
-  sprintf(newRootFile,"results/output_gen_pt10.root");
+  sprintf(newRootFile,"results/output_gen_pt2010.root");
   TFile f_var(newRootFile, "RECREATE");
   if(!silent){
     std::cout << "[Info:] results root file named " << newRootFile << std::endl;
