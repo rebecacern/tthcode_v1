@@ -58,7 +58,7 @@ void code_0(int nsel=0, bool silent=0){
   
   cout <<"[Info:] You are running GEN code over " << plotName << endl;
   char newRootFile[300];
-  sprintf(newRootFile,"results/output_gen_noptcuts.root");
+  sprintf(newRootFile,"results/output_gen_pt10.root");
   TFile f_var(newRootFile, "RECREATE");
   if(!silent){
     std::cout << "[Info:] results root file named " << newRootFile << std::endl;
@@ -240,22 +240,14 @@ void code_0(int nsel=0, bool silent=0){
     TVector3 vqt2(qt2.tlv().Px(), qt2.tlv().Py(), qt2.tlv().Pz());
 
 
-    // Filling histos
-    histo_dr->Fill(vlep1.DeltaR(vlep2), weight);
-    histo_dr_hwwqq->Fill(vqw1.DeltaR(vqw2), weight);
-    histo_dr_hwwlq->Fill(TMath::Min(vqw1.DeltaR(vlep1),vqw2.DeltaR(vlep1)), weight);
-    
     float mindr = TMath::Min(vqw1.DeltaR(vlep1),vqw2.DeltaR(vlep1));
     mindr = TMath::Min(mindr,vqt1.DeltaR(vlep1));
     mindr = TMath::Min(mindr,vqt2.DeltaR(vlep1));
-    histo_dr_hwwl_q->Fill(mindr, weight);
-    
-    histo_dr_toplq->Fill(TMath::Min(vqt1.DeltaR(vlep2),vqt2.DeltaR(vlep2)), weight);
     
     float mindr_t = TMath::Min(vqt1.DeltaR(vlep2),vqt2.DeltaR(vlep2));
     mindr_t = TMath::Min(mindr_t,vqw1.DeltaR(vlep2));
     mindr_t = TMath::Min(mindr_t,vqw2.DeltaR(vlep2));
-    histo_dr_topl_q->Fill(mindr_t, weight);
+   
     
     //b quarks
     ttH::GenParticle qb1 = pruned_genParticles->at(indexes[2]);
@@ -263,11 +255,26 @@ void code_0(int nsel=0, bool silent=0){
     TVector3 vqb1(qb1.tlv().Px(), qb1.tlv().Py(), qb1.tlv().Pz());
     TVector3 vqb2(qb2.tlv().Px(), qb2.tlv().Py(), qb2.tlv().Pz());
     
+    if (vlep1.Pt() < 10 || vlep2.Pt() < 10 || vqw1.Pt() < 10 || vqw2.Pt() < 10 || vqt1.Pt() < 10 || vqt2.Pt() < 10 || 
+    	vqb1.Pt() < 10 ||  vqb2.Pt() < 10) continue;
+    histo->Fill(7., weight); 
+
+    
+    
+    if (vlep1.Pt() < 20 && vlep2.Pt() < 20) continue;
+     histo->Fill(8., weight); 	
+    // Filling histos
+    histo_dr->Fill(vlep1.DeltaR(vlep2), weight);
+    histo_dr_hwwqq->Fill(vqw1.DeltaR(vqw2), weight);
+    histo_dr_hwwlq->Fill(TMath::Min(vqw1.DeltaR(vlep1),vqw2.DeltaR(vlep1)), weight);
+    histo_dr_hwwl_q->Fill(mindr, weight);
+    histo_dr_toplq->Fill(TMath::Min(vqt1.DeltaR(vlep2),vqt2.DeltaR(vlep2)), weight);
+    histo_dr_topl_q->Fill(mindr_t, weight);
     histo_dr_hwwlb->Fill(TMath::Min(vqb1.DeltaR(vlep1),vqb2.DeltaR(vlep1)), weight);
     histo_dr_toplb->Fill(vqb2.DeltaR(vlep2), weight);
     
     if (mindr > 0.3) continue;
-    histo->Fill(7., weight); 
+    histo->Fill(9., weight); 
     
      
     
@@ -280,7 +287,7 @@ void code_0(int nsel=0, bool silent=0){
     cout << "------------------------------------------" << endl;
     cout << "[Results:] GEN only " << endl;
     cout << "------------------------------------------" << endl;
-    for (int i = 1; i < 9; i++){
+    for (int i = 1; i < 11; i++){
       if (i == 1) cout << " all: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 2) cout << " higgs decay: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 3) cout << " HWW : " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
@@ -288,7 +295,9 @@ void code_0(int nsel=0, bool silent=0){
       if (i == 5) cout << " Semileptonic tt: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 6) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 7) cout << " proper index: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 8) cout << " DR HWW and closest LF q < 0.3: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 8) cout << " pt > 10 all : " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 9) cout << " pt > 20,10 leptons: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 10) cout << " DR HWW and closest LF q < 0.3: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
     }
     cout << "------------------------------------------" << endl;
     cout << "[Info:]" << nHWW*100/nused << "% of HWW in the events" << endl;
