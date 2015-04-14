@@ -4,7 +4,7 @@
 #include "objectClasses.h"
 
 
-void code_0(int nsel=0, int mode=0, bool silent=0){
+void code_0(int nsel=0, bool silent=0){
 
 
   
@@ -30,17 +30,6 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   Int_t 	  runNumber;
   Int_t 	  higgs_decay;
 
-  vector<ttH::Electron> *preselected_electrons = 0;
-  vector<ttH::Muon> *preselected_muons = 0;
-  vector<ttH::Lepton> *preselected_leptons = 0;
-  vector<ttH::Jet> *preselected_jets = 0;
-
-  vector<ttH::Electron> *tightMvaBased_electrons = 0;
-  vector<ttH::Muon> *tightMvaBased_muons = 0;
-  vector<ttH::Lepton> *tightMvaBased_leptons = 0;
-  vector<ttH::Jet> *tight_bJets= 0;
-  
-  vector<ttH::MET> *met = 0;
   
   vector<ttH::GenParticle> *pruned_genParticles= 0;
   
@@ -52,17 +41,7 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   TBranch *b_lumiBlock;   //!
   TBranch *b_runNumber;   //!
   TBranch *b_higgs_decay;   //!
-  
-  TBranch *b_preselected_electrons = 0;
-  TBranch *b_preselected_muons = 0;
-  TBranch *b_preselected_leptons = 0;
-  TBranch *b_preselected_jets = 0;
-  
-  TBranch *b_tightMvaBased_electrons = 0;
-  TBranch *b_tightMvaBased_muons = 0;
-  TBranch *b_tightMvaBased_leptons = 0;
-  TBranch *b_tight_bJets= 0;
-  TBranch *b_met = 0;
+ 
   
   TBranch *b_pruned_genParticles = 0;
  
@@ -73,26 +52,16 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   tree->SetBranchAddress("lumiBlock", &lumiBlock, &b_lumiBlock);
   tree->SetBranchAddress("runNumber", &runNumber, &b_runNumber);
   tree->SetBranchAddress("higgs_decay", &higgs_decay, &b_higgs_decay);
-  tree->SetBranchAddress("preselected_electrons", &preselected_electrons, &b_preselected_electrons);
-  tree->SetBranchAddress("preselected_muons", &preselected_muons, &b_preselected_muons);
-  tree->SetBranchAddress("preselected_leptons", &preselected_leptons, &b_preselected_leptons);
-  tree->SetBranchAddress("preselected_jets", &preselected_jets, &b_preselected_jets);
-  tree->SetBranchAddress("tightMvaBased_electrons", &tightMvaBased_electrons, &b_tightMvaBased_electrons);
-  tree->SetBranchAddress("tightMvaBased_muons", &tightMvaBased_muons, &b_tightMvaBased_muons);
-  tree->SetBranchAddress("tightMvaBased_leptons", &tightMvaBased_leptons, &b_tightMvaBased_leptons);
-  tree->SetBranchAddress("tight_bJets", &tight_bJets, &b_tight_bJets);
-  tree->SetBranchAddress("met", &met, &b_met);
   tree->SetBranchAddress("pruned_genParticles", &pruned_genParticles, &b_pruned_genParticles);
   ////
   
   
   cout <<"[Info:] You are running GEN code over " << plotName << endl;
-  if (mode != 0 && mode !=1 && mode !=2) mode = 0;
   char newRootFile[300];
   sprintf(newRootFile,"results/output_gen.root");
   TFile f_var(newRootFile, "RECREATE");
   if(!silent){
-    std::cout << "results root file named " << newRootFile << std::endl;
+    std::cout << "[Info:] results root file named " << newRootFile << std::endl;
   }
   
   // Histos
@@ -100,7 +69,6 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   sprintf(title,"cuts_%s", plotName);
   TH1F* histo = new TH1F( title, "Cut Flow", 20, 0, 20 );
   histo->Sumw2();
- 
  
   sprintf(title,"deltaR_%s", plotName);
   TH1F* histo_dr = new TH1F( title, "#Delta R between SS leptons", 100, 0, 5 );
@@ -128,21 +96,7 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
     //Point to the proper entry
     b_higgs_decay->GetEntry(tentry);
     b_pruned_genParticles->GetEntry(tentry);
-     
-     
-    /*  b_preselected_electrons->GetEntry(tentry);
-	b_preselected_muons->GetEntry(tentry);
-	b_preselected_leptons->GetEntry(tentry);
-	b_preselected_jets->GetEntry(tentry);
-   
-	b_tightMvaBased_electrons->GetEntry(tentry);
-	b_tightMvaBased_muons->GetEntry(tentry);
-	b_tightMvaBased_leptons->GetEntry(tentry);
-	b_tight_bJets->GetEntry(tentry);
-	b_met->GetEntry(tentry);*/
-   
-    
-    
+  
     nused++; 
 
     histo->Fill(0., weight);
@@ -151,10 +105,8 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
     histo->Fill(1., weight);
     
     bool HWW = false;
-    bool HZZ = false;
     int n_W_plus = 0;
     int n_W_minus = 0;
-    int n_Z = 0;
     bool HW_plus_lepton = false;
     bool HW_minus_lepton = false; 
     int n_tW_plus = 0;
@@ -214,30 +166,18 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
 	  }
 	}
       }
-      if (genpar.pdgID == 23){
-        if (genpar.mother !=9999){
-	  ttH::GenParticle mamapar = pruned_genParticles->at(genpar.mother);
-	  if (mamapar.pdgID == 25)  n_Z++; 
-	}
-      }
       
     }
     if (nsel ==0 && n_W_plus == 1 && n_W_minus == 1) HWW = true;
-    else if (nsel ==0 && n_Z == 2) HZZ = true;  
-   
-    if (nsel ==0 && HWW && HZZ) cout << "[Info:] You are doing something wrong, you cannot have HWW and HZZ in the same event" << endl;
-    
-    
-    if (nsel ==0 && HWW) nHWW++;
-    else if (nsel ==0 && HZZ) nHZZ++;
-
+       
     if (nsel ==0 && !HWW) continue;
     histo->Fill(2., weight);
+    nHWW++;
+    
     if (nsel == 0 && ((!HW_minus_lepton && !HW_plus_lepton) || (HW_minus_lepton && HW_plus_lepton))) continue;
     histo->Fill(3., weight);
     
     if ((!tW_minus_lepton && !tW_plus_lepton) || (tW_minus_lepton && tW_plus_lepton)) continue;
-    
     histo->Fill(4., weight);
    
     ttH::GenParticle lep1 = pruned_genParticles->at(indexes[0]);
@@ -307,31 +247,23 @@ void code_0(int nsel=0, int mode=0, bool silent=0){
   }
   
   
-  
-  char label[300];
-  sprintf(label, "emu");
-  if (mode == 1) sprintf(label,"mumu");
-  if (mode == 2) sprintf(label,"ee");
-  
- 
- 
+
   
   if (!silent){
     cout << "------------------------------------------" << endl;
-    cout << "[Results:] GEN only " << label << endl;
+    cout << "[Results:] GEN only " << endl;
     cout << "------------------------------------------" << endl;
     for (int i = 1; i < 9; i++){
       if (i == 1) cout << " all: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 2) cout << " higgs decay: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 3) cout << " HWW : " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 4) cout << " Semileptonic HWW: " << label << ": " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 4) cout << " Semileptonic HWW: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 5) cout << " Semileptonic tt: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 6) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 7) cout << " proper index: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 8) cout << " 2 tight corresponding with the presel: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
     }
     cout << "------------------------------------------" << endl;
-    cout << "[Info:]" << nHWW*100/nused << "% of HWW, " << nHZZ*100/nused << "% of HZZ in the events" << endl;
+    cout << "[Info:]" << nHWW*100/nused << "% of HWW in the events" << endl;
   
 
 
