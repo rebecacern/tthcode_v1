@@ -112,8 +112,8 @@ void code_0(int nsel=0, bool silent=0){
   int nHZZ = 0;
   if (!silent) cout << "[Info:] Number of raw events: " << tree->GetEntries() << endl;
   // loop over events 
-  //for(int iEvent = 0; iEvent < 100000; iEvent++){
-  for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
+  for(int iEvent = 0; iEvent < 10000; iEvent++){
+  //for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
     Long64_t tentry = tree->LoadTree(iEvent);
     //Point to the proper entry
     b_higgs_decay->GetEntry(tentry);
@@ -128,7 +128,7 @@ void code_0(int nsel=0, bool silent=0){
        
     int indexes[8] = { -1, -1, -1, -1, -1, -1, -1, -1}; //lH, lt, btl, btqq, q1t, q2t, q1H, q2H   
        
-    bool HWW = false;
+   bool HWW = false; 
    int indexH = -1;
    int topindex[2] = {-1, -1};
    for (int i = 0; i < pruned_genParticles->size(); i++){
@@ -143,9 +143,7 @@ void code_0(int nsel=0, bool silent=0){
       } 
       else if (genpar.pdgID == 6 && genpar.status == 62) topindex[0] = i;
       else if (genpar.pdgID == -6 && genpar.status == 62) topindex[1] = i;
-
     } 
-         
     if (nsel ==0 && !HWW) continue;
     histo->Fill(2., weight);
     nHWW++;
@@ -159,19 +157,18 @@ void code_0(int nsel=0, bool silent=0){
       ttH::GenParticle child_2 = pruned_genParticles->at(W_1.child1);
       if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13){ nHleptons++; indexes[0]=W_1.child0;}
       else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13){ nHleptons++; indexes[0]=W_1.child1;}
-      else if (abs(child_1.pdgID) <=4 && abs(child_2.pdgID) <=4){ indexes[6]=W_1.child0;indexes[7]=W_1.child1;}
+      else if (abs(child_1.pdgID) < 5 && abs(child_2.pdgID) < 5){ indexes[6]=W_1.child0;indexes[7]=W_1.child1;}
     }
     if (W_2.child0 != 9999 && W_2.child1 != 9999) {
       ttH::GenParticle child_1 = pruned_genParticles->at(W_2.child0);
       ttH::GenParticle child_2 = pruned_genParticles->at(W_2.child1);
       if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13){ nHleptons++;; indexes[0]=W_2.child0;}
       else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {nHleptons++;indexes[0]=W_2.child1;}
-      else if (abs(child_1.pdgID) <=4 && abs(child_2.pdgID) <=4){ indexes[6]=W_2.child0;indexes[7]=W_2.child1;}
+      else if (abs(child_1.pdgID) < 5 && abs(child_2.pdgID) < 5){ indexes[6]=W_2.child0;indexes[7]=W_2.child1;}
     }
     
    if (nHleptons != 1) continue;
    histo->Fill(3., weight);
-
    
    int indext[4] = {-1, -1, -1, -1}; // tW tb atW atb
     ttH::GenParticle t_1 = pruned_genParticles->at(topindex[0]);
@@ -183,8 +180,8 @@ void code_0(int nsel=0, bool silent=0){
 	    indext[0] =  t_1.child0;
 	    indext[1] =  t_1.child1;
 	  } else if (abs(child_2.pdgID) == 24 && abs(child_1.pdgID) == 5){
-	    indext[1] =  t_1.child0;
 	    indext[0] =  t_1.child1;
+	    indext[1] =  t_1.child0;
       } 
     } 
     if (t_2.child0 != 9999 && t_2.child1 != 9999) {
@@ -194,8 +191,8 @@ void code_0(int nsel=0, bool silent=0){
 	    indext[2] =  t_2.child0;
 	    indext[3] =  t_2.child1;
 	  } else if (abs(child_2.pdgID) == 24 && abs(child_1.pdgID) == 5){
-	    indext[3] =  t_2.child0;
 	    indext[2] =  t_2.child1;
+	    indext[3] =  t_2.child0;
       }
     }
   
@@ -206,50 +203,57 @@ void code_0(int nsel=0, bool silent=0){
     int ntopleptons = 0;
   
     ttH::GenParticle tW_1 = pruned_genParticles->at(indext[0]);
-    ttH::GenParticle tW_2 = pruned_genParticles->at(indext[3]);
-    
-    if (tW_1.child0 != 9999 && tW_1.child1 != 9999) {
-      ttH::GenParticle child_1 = pruned_genParticles->at(tW_1.child0);
-      ttH::GenParticle child_2 = pruned_genParticles->at(tW_1.child1);
-      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {ntopleptons++; indexes[1]=tW_1.child0; indexes[2] = indext[2];}
-      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13){ ntopleptons++;indexes[1]=tW_1.child1;indexes[2] = indext[2];}
-      else if (abs(child_1.pdgID) <=4 && abs(child_2.pdgID) <=4){indexes[4]=tW_1.child0;indexes[5]=tW_1.child1; indexes[3] = indext[2];}
+    ttH::GenParticle tW_2 = pruned_genParticles->at(indext[2]);
+    int nWs = 0;
+    for (int i = 0; i < pruned_genParticles->size(); i++){
+      ttH::GenParticle genpar = pruned_genParticles->at(i);
+      if (abs(genpar.pdgID) == 24 && genpar.status < 24){
+       if (genpar.child0 != 9999 && genpar.child1 != 9999 && genpar.mother != 9999) {
+         ttH::GenParticle genpar0 = pruned_genParticles->at(genpar.child0);
+	// if (abs(genpar0.pdgID) == 11 ||  abs(genpar0.pdgID) == 13) nWs++;
+       }
+      } else if (abs(genpar.pdgID) == 11 ||  abs(genpar.pdgID) == 13) nWs++;
     } 
-    if (tW_2.child0 != 9999 && tW_2.child1 != 9999) {
-      ttH::GenParticle child_1 = pruned_genParticles->at(tW_2.child0);
-      ttH::GenParticle child_2 = pruned_genParticles->at(tW_2.child1);
-      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {ntopleptons++; indexes[1]=tW_2.child0; indexes[2] = indext[4];}
-      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13){ntopleptons++; indexes[1]=tW_2.child1; indexes[2] = indext[4];}
-      else if (abs(child_1.pdgID) <=4 && abs(child_2.pdgID) <=4){indexes[4]=tW_2.child0;indexes[5]=tW_2.child1; indexes[3] = indext[4];}
-    } 
-    
+    cout << "ALERT -> " << nWs << endl;
  
+   
+   
+    cout << ntopleptons << endl;
    if (ntopleptons != 1) continue;
    histo->Fill(4., weight);
    
- 
+   
+   
+    /*
+    
 
+   for (int i =0; i<8; i++){
+    cout << indexes[i] << " " ;}
+    cout << endl;
+ 
+*/
     ttH::GenParticle lep1 = pruned_genParticles->at(indexes[0]);
     ttH::GenParticle lep2 = pruned_genParticles->at(indexes[1]);
 
     if (lep1.pdgID*lep2.pdgID < 1) continue;
     histo->Fill(5., weight);
-   
+   cout << endl;
     bool index_prop = true;
     for (int i =0; i<8; i++){
+    cout << indexes[i] << " " ;
       if (indexes [i] == -1) index_prop = false;}
     if (!index_prop) continue;
-    
+    cout << endl;
     histo->Fill(6., weight);
 
-       
+    /*   
     cout << iEvent << endl;
     for (int i =0; i<8; i++){
       ttH::GenParticle q = pruned_genParticles->at(indexes[i]);
       cout << " - " << q.pdgID ;
     }
     cout << endl;  
-   
+   */
    
     
     
