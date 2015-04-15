@@ -173,7 +173,7 @@ void code_0(int nsel=0, bool silent=0){
     if (nHleptons != 1) continue;
     histo->Fill(3., weight);
    
-     // Checking decay products of the top quarks  
+    // Checking decay products of the top quarks  
     int indext[4] = {-1, -1, -1, -1}; // tW tb atW atb
     ttH::GenParticle t_1 = pruned_genParticles->at(topindex[0]);
     ttH::GenParticle t_2 = pruned_genParticles->at(topindex[1]);
@@ -216,18 +216,18 @@ void code_0(int nsel=0, bool silent=0){
 	    ttH::GenParticle mompar = pruned_genParticles->at(genpar.mother);
 	    if  (abs(mompar.pdgID) == 24){
               
-	        if (mompar.mother != 9999){
-		     ttH::GenParticle granpar = pruned_genParticles->at(mompar.mother);
-		     if (abs(granpar.pdgID) == 6) ntopleptons++;
+	      if (mompar.mother != 9999){
+		ttH::GenParticle granpar = pruned_genParticles->at(mompar.mother);
+		if (abs(granpar.pdgID) == 6) ntopleptons++;
 		   
-		} 
+	      } 
 	      
+	    }
 	  }
-	 }
 	}
       }
     } 
- cout << ntopleptons << endl;
+    cout << ntopleptons << endl;
   
    
     if (ntopleptons != 1) continue;
@@ -243,19 +243,19 @@ void code_0(int nsel=0, bool silent=0){
       cout << endl;
  
     */
-  /*  ttH::GenParticle lep1 = pruned_genParticles->at(indexes[0]);
-    ttH::GenParticle lep2 = pruned_genParticles->at(indexes[1]);
+    /*  ttH::GenParticle lep1 = pruned_genParticles->at(indexes[0]);
+	ttH::GenParticle lep2 = pruned_genParticles->at(indexes[1]);
 
-    if (lep1.pdgID*lep2.pdgID < 1) continue;
-    histo->Fill(5., weight);
-    cout << endl;
-    bool index_prop = true;
-    for (int i =0; i<8; i++){
-      cout << indexes[i] << " " ;
-      if (indexes [i] == -1) index_prop = false;}
-    if (!index_prop) continue;
-    cout << endl;
-    histo->Fill(6., weight);
+	if (lep1.pdgID*lep2.pdgID < 1) continue;
+	histo->Fill(5., weight);
+	cout << endl;
+	bool index_prop = true;
+	for (int i =0; i<8; i++){
+	cout << indexes[i] << " " ;
+	if (indexes [i] == -1) index_prop = false;}
+	if (!index_prop) continue;
+	cout << endl;
+	histo->Fill(6., weight);
     */
 
     /*   
