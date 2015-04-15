@@ -58,7 +58,7 @@ void code_0(int nsel=0, bool silent=0){
   
   cout <<"[Info:] You are running GEN code over " << plotName << endl;
   char newRootFile[300];
-  sprintf(newRootFile,"results/output_gen_pt2010.root");
+  sprintf(newRootFile,"results/output_gen_nocuts.root");
   TFile f_var(newRootFile, "RECREATE");
   if(!silent){
     std::cout << "[Info:] results root file named " << newRootFile << std::endl;
@@ -156,9 +156,15 @@ void code_0(int nsel=0, bool silent=0){
 	    if (genpar.child0 != 9999 && genpar.child1 != 9999) {
 	      ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
 	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
-	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child0; indexes[2]=genpar.mother;}
-	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child1; indexes[2]=genpar.mother;}
-	      else if (abs(child_1.pdgID) <5  &&  abs(child_2.pdgID) <5){indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
+	      int brother = -1;
+	      if (mamapar.child1 = !9999 && mamapar.child0 = !9999){
+	        ttH::GenParticle bro = pruned_genParticles->at(mamapar.child1);
+	        if  (abs(bro.pdgID) == 5) brother=mamapar.child1;
+	        else mamapar.child0;
+	      }
+	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child0; indexes[2]=brother;}
+	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_plus_lepton = true; indexes[1] = genpar.child1; indexes[2]=brother;}
+	      else if (abs(child_1.pdgID) <5  &&  abs(child_2.pdgID) <5){indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=brother;}
 	    }
 	  } 
 	}
@@ -181,9 +187,15 @@ void code_0(int nsel=0, bool silent=0){
 	    if (genpar.child0 != 9999 && genpar.child1 != 9999) {
 	      ttH::GenParticle child_1 = pruned_genParticles->at(genpar.child0);
 	      ttH::GenParticle child_2 = pruned_genParticles->at(genpar.child1);
-	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child0; indexes[2]=genpar.mother;}
-	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child1; indexes[2]=genpar.mother;}
-	      else if (abs(child_1.pdgID) <5  &&  abs(child_2.pdgID) <5){indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=genpar.mother;}
+	      int brother = -1;
+	      if (mamapar.child1 = !9999 && mamapar.child0 = !9999){
+	        ttH::GenParticle bro = pruned_genParticles->at(mamapar.child1);
+	        if  (abs(bro.pdgID) == 5) brother=mamapar.child1;
+	        else mamapar.child0;
+	      }
+	      if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child0; indexes[2]=brother;}
+	      else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {tW_minus_lepton = true; indexes[1] = genpar.child1; indexes[2]=brother;}
+	      else if (abs(child_1.pdgID) <5  &&  abs(child_2.pdgID) <5){indexes[4] = genpar.child0; indexes[5] = genpar.child1; indexes[3]=brother;}
 	    }
 	  }
 	}
@@ -254,15 +266,16 @@ void code_0(int nsel=0, bool silent=0){
     ttH::GenParticle qb2 = pruned_genParticles->at(indexes[3]);
     TVector3 vqb1(qb1.tlv().Px(), qb1.tlv().Py(), qb1.tlv().Pz());
     TVector3 vqb2(qb2.tlv().Px(), qb2.tlv().Py(), qb2.tlv().Pz());
-    
+    /*
     if (vlep1.Pt() < 10 || vlep2.Pt() < 10 || vqw1.Pt() < 10 || vqw2.Pt() < 10 || vqt1.Pt() < 10 || vqt2.Pt() < 10 || 
     	vqb1.Pt() < 10 ||  vqb2.Pt() < 10) continue;
     histo->Fill(7., weight); 
-
+*/
     
-    
+    /*
     if (vlep1.Pt() < 20 && vlep2.Pt() < 20) continue;
-     histo->Fill(8., weight); 	
+     histo->Fill(8., weight); 
+     */	
     // Filling histos
     histo_dr->Fill(vlep1.DeltaR(vlep2), weight);
     histo_dr_hwwqq->Fill(vqw1.DeltaR(vqw2), weight);
