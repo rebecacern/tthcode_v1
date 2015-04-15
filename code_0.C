@@ -126,8 +126,9 @@ void code_0(int nsel=0, bool silent=0){
     if (nsel ==0 && !higgs_decay) continue;
     histo->Fill(1., weight);
        
-    int indexes[8] = { -1, -1, -1, -1, -1, -1, -1, -1}; //lH, lt, btl, btqq, q1t, q2t, q1H, q2H   
+    int indexes[8] = { -1, -1, -1, -1, -1, -1, -1, -1}; //Main indexes for using later lH, lt, btl, btqq, q1t, q2t, q1H, q2H   
        
+    // Checking the HWW decay and the top and atitop index   
     bool HWW = false; 
     int indexH = -1;
     int topindex[2] = {-1, -1};
@@ -148,10 +149,12 @@ void code_0(int nsel=0, bool silent=0){
     histo->Fill(2., weight);
     nHWW++;
     
+    // Selecting semileptonic decay of the Higgs 
     int nHleptons = 0;
     ttH::GenParticle Hpar = pruned_genParticles->at(indexH);
     ttH::GenParticle W_1 = pruned_genParticles->at(Hpar.child0);
     ttH::GenParticle W_2 = pruned_genParticles->at(Hpar.child1);
+    
     if (W_1.child0 != 9999 && W_1.child1 != 9999) {
       ttH::GenParticle child_1 = pruned_genParticles->at(W_1.child0);
       ttH::GenParticle child_2 = pruned_genParticles->at(W_1.child1);
@@ -170,9 +173,11 @@ void code_0(int nsel=0, bool silent=0){
     if (nHleptons != 1) continue;
     histo->Fill(3., weight);
    
+     // Checking decay products of the top quarks  
     int indext[4] = {-1, -1, -1, -1}; // tW tb atW atb
     ttH::GenParticle t_1 = pruned_genParticles->at(topindex[0]);
     ttH::GenParticle t_2 = pruned_genParticles->at(topindex[1]);
+    
     if (t_1.child0 != 9999 && t_1.child1 != 9999) {
       ttH::GenParticle child_1 = pruned_genParticles->at(t_1.child0);
       ttH::GenParticle child_2 = pruned_genParticles->at(t_1.child1);
@@ -197,30 +202,36 @@ void code_0(int nsel=0, bool silent=0){
     }
   
     bool good = true;
-    for (int i=0; i<4; i++){if (indext[i] == -1) good = false; }
+    for (int i=0; i<4; i++){ if (indext[i] == -1) good = false; }
     if (!good) continue;
-   
+    histo->Fill(4., weight);
+    
+    
     int ntopleptons = 0;
-  
-    ttH::GenParticle tW_1 = pruned_genParticles->at(indext[0]);
-    ttH::GenParticle tW_2 = pruned_genParticles->at(indext[2]);
-    int nWs = 0;
     for (int i = 0; i < pruned_genParticles->size(); i++){
       ttH::GenParticle genpar = pruned_genParticles->at(i);
-      if (abs(genpar.pdgID) == 24 && genpar.status < 24){
-	if (genpar.child0 != 9999 && genpar.child1 != 9999 && genpar.mother != 9999) {
-	  ttH::GenParticle genpar0 = pruned_genParticles->at(genpar.child0);
-	  // if (abs(genpar0.pdgID) == 11 ||  abs(genpar0.pdgID) == 13) nWs++;
+      if (abs(genpar.pdgID) == 13 || genpar.status == 11){
+        if (i !=  indexes[0]) {
+	  if (genpar.mother != 9999){
+	    ttH::GenParticle mompar = pruned_genParticles->at(genpar.mother);
+	    if  (abs(mompar.pdgID) == 24){
+              
+	        if (mompar.mother != 9999){
+		     ttH::GenParticle granpar = pruned_genParticles->at(mompar.mother);
+		     if (abs(granpar.pdgID) == 6) ntopleptons++;
+		   
+		} 
+	      
+	  }
+	 }
 	}
-      } else if (abs(genpar.pdgID) == 11 ||  abs(genpar.pdgID) == 13) nWs++;
+      }
     } 
-    cout << "ALERT -> " << nWs << endl;
- 
+ cout << ntopleptons << endl;
+  
    
-   
-    cout << ntopleptons << endl;
     if (ntopleptons != 1) continue;
-    histo->Fill(4., weight);
+    
    
    
    
@@ -232,7 +243,7 @@ void code_0(int nsel=0, bool silent=0){
       cout << endl;
  
     */
-    ttH::GenParticle lep1 = pruned_genParticles->at(indexes[0]);
+  /*  ttH::GenParticle lep1 = pruned_genParticles->at(indexes[0]);
     ttH::GenParticle lep2 = pruned_genParticles->at(indexes[1]);
 
     if (lep1.pdgID*lep2.pdgID < 1) continue;
@@ -245,6 +256,7 @@ void code_0(int nsel=0, bool silent=0){
     if (!index_prop) continue;
     cout << endl;
     histo->Fill(6., weight);
+    */
 
     /*   
 	 cout << iEvent << endl;
@@ -326,7 +338,7 @@ void code_0(int nsel=0, bool silent=0){
       if (i == 2) cout << " higgs decay: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 3) cout << " HWW : " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 4) cout << " Semileptonic HWW: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 5) cout << " Semileptonic tt: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 5) cout << " Two Wb decays of tt: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 6) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 7) cout << " proper index: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 8) cout << " pt > 10 all : " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
