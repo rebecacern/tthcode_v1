@@ -113,7 +113,7 @@ void code_0(int nsel=0, bool silent=0){
   if (!silent) cout << "[Info:] Number of raw events: " << tree->GetEntries() << endl;
   // loop over events 
   for(int iEvent = 0; iEvent < 10000; iEvent++){
-  //for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
+    //for(int iEvent = 0; iEvent < tree->GetEntries(); iEvent++){
     Long64_t tentry = tree->LoadTree(iEvent);
     //Point to the proper entry
     b_higgs_decay->GetEntry(tentry);
@@ -128,10 +128,10 @@ void code_0(int nsel=0, bool silent=0){
        
     int indexes[8] = { -1, -1, -1, -1, -1, -1, -1, -1}; //lH, lt, btl, btqq, q1t, q2t, q1H, q2H   
        
-   bool HWW = false; 
-   int indexH = -1;
-   int topindex[2] = {-1, -1};
-   for (int i = 0; i < pruned_genParticles->size(); i++){
+    bool HWW = false; 
+    int indexH = -1;
+    int topindex[2] = {-1, -1};
+    for (int i = 0; i < pruned_genParticles->size(); i++){
       ttH::GenParticle genpar = pruned_genParticles->at(i);
       if (genpar.pdgID == 25 && genpar.status == 62){
         indexH = i;
@@ -167,38 +167,38 @@ void code_0(int nsel=0, bool silent=0){
       else if (abs(child_1.pdgID) < 5 && abs(child_2.pdgID) < 5){ indexes[6]=W_2.child0;indexes[7]=W_2.child1;}
     }
     
-   if (nHleptons != 1) continue;
-   histo->Fill(3., weight);
+    if (nHleptons != 1) continue;
+    histo->Fill(3., weight);
    
-   int indext[4] = {-1, -1, -1, -1}; // tW tb atW atb
+    int indext[4] = {-1, -1, -1, -1}; // tW tb atW atb
     ttH::GenParticle t_1 = pruned_genParticles->at(topindex[0]);
     ttH::GenParticle t_2 = pruned_genParticles->at(topindex[1]);
     if (t_1.child0 != 9999 && t_1.child1 != 9999) {
       ttH::GenParticle child_1 = pruned_genParticles->at(t_1.child0);
       ttH::GenParticle child_2 = pruned_genParticles->at(t_1.child1);
       if (abs(child_1.pdgID) == 24 && abs(child_2.pdgID) == 5){
-	    indext[0] =  t_1.child0;
-	    indext[1] =  t_1.child1;
-	  } else if (abs(child_2.pdgID) == 24 && abs(child_1.pdgID) == 5){
-	    indext[0] =  t_1.child1;
-	    indext[1] =  t_1.child0;
+	indext[0] =  t_1.child0;
+	indext[1] =  t_1.child1;
+      } else if (abs(child_2.pdgID) == 24 && abs(child_1.pdgID) == 5){
+	indext[0] =  t_1.child1;
+	indext[1] =  t_1.child0;
       } 
     } 
     if (t_2.child0 != 9999 && t_2.child1 != 9999) {
       ttH::GenParticle child_1 = pruned_genParticles->at(t_2.child0);
       ttH::GenParticle child_2 = pruned_genParticles->at(t_2.child1);
       if (abs(child_1.pdgID) == 24 && abs(child_2.pdgID) == 5){
-	    indext[2] =  t_2.child0;
-	    indext[3] =  t_2.child1;
-	  } else if (abs(child_2.pdgID) == 24 && abs(child_1.pdgID) == 5){
-	    indext[2] =  t_2.child1;
-	    indext[3] =  t_2.child0;
+	indext[2] =  t_2.child0;
+	indext[3] =  t_2.child1;
+      } else if (abs(child_2.pdgID) == 24 && abs(child_1.pdgID) == 5){
+	indext[2] =  t_2.child1;
+	indext[3] =  t_2.child0;
       }
     }
   
-   bool good = true;
-   for (int i=0; i<4; i++){if (indext[i] == -1) good = false; }
-   if (!good) continue;
+    bool good = true;
+    for (int i=0; i<4; i++){if (indext[i] == -1) good = false; }
+    if (!good) continue;
    
     int ntopleptons = 0;
   
@@ -208,10 +208,10 @@ void code_0(int nsel=0, bool silent=0){
     for (int i = 0; i < pruned_genParticles->size(); i++){
       ttH::GenParticle genpar = pruned_genParticles->at(i);
       if (abs(genpar.pdgID) == 24 && genpar.status < 24){
-       if (genpar.child0 != 9999 && genpar.child1 != 9999 && genpar.mother != 9999) {
-         ttH::GenParticle genpar0 = pruned_genParticles->at(genpar.child0);
-	// if (abs(genpar0.pdgID) == 11 ||  abs(genpar0.pdgID) == 13) nWs++;
-       }
+	if (genpar.child0 != 9999 && genpar.child1 != 9999 && genpar.mother != 9999) {
+	  ttH::GenParticle genpar0 = pruned_genParticles->at(genpar.child0);
+	  // if (abs(genpar0.pdgID) == 11 ||  abs(genpar0.pdgID) == 13) nWs++;
+	}
       } else if (abs(genpar.pdgID) == 11 ||  abs(genpar.pdgID) == 13) nWs++;
     } 
     cout << "ALERT -> " << nWs << endl;
@@ -219,41 +219,41 @@ void code_0(int nsel=0, bool silent=0){
    
    
     cout << ntopleptons << endl;
-   if (ntopleptons != 1) continue;
-   histo->Fill(4., weight);
+    if (ntopleptons != 1) continue;
+    histo->Fill(4., weight);
    
    
    
     /*
     
 
-   for (int i =0; i<8; i++){
-    cout << indexes[i] << " " ;}
-    cout << endl;
+      for (int i =0; i<8; i++){
+      cout << indexes[i] << " " ;}
+      cout << endl;
  
-*/
+    */
     ttH::GenParticle lep1 = pruned_genParticles->at(indexes[0]);
     ttH::GenParticle lep2 = pruned_genParticles->at(indexes[1]);
 
     if (lep1.pdgID*lep2.pdgID < 1) continue;
     histo->Fill(5., weight);
-   cout << endl;
+    cout << endl;
     bool index_prop = true;
     for (int i =0; i<8; i++){
-    cout << indexes[i] << " " ;
+      cout << indexes[i] << " " ;
       if (indexes [i] == -1) index_prop = false;}
     if (!index_prop) continue;
     cout << endl;
     histo->Fill(6., weight);
 
     /*   
-    cout << iEvent << endl;
-    for (int i =0; i<8; i++){
-      ttH::GenParticle q = pruned_genParticles->at(indexes[i]);
-      cout << " - " << q.pdgID ;
-    }
-    cout << endl;  
-   */
+	 cout << iEvent << endl;
+	 for (int i =0; i<8; i++){
+	 ttH::GenParticle q = pruned_genParticles->at(indexes[i]);
+	 cout << " - " << q.pdgID ;
+	 }
+	 cout << endl;  
+    */
    
     
     
@@ -288,15 +288,15 @@ void code_0(int nsel=0, bool silent=0){
     TVector3 vqb1(qb1.tlv().Px(), qb1.tlv().Py(), qb1.tlv().Pz());
     TVector3 vqb2(qb2.tlv().Px(), qb2.tlv().Py(), qb2.tlv().Pz());
     /*
-    if (vlep1.Pt() < 10 || vlep2.Pt() < 10 || vqw1.Pt() < 10 || vqw2.Pt() < 10 || vqt1.Pt() < 10 || vqt2.Pt() < 10 || 
-    	vqb1.Pt() < 10 ||  vqb2.Pt() < 10) continue;
-    histo->Fill(7., weight); 
-*/
+      if (vlep1.Pt() < 10 || vlep2.Pt() < 10 || vqw1.Pt() < 10 || vqw2.Pt() < 10 || vqt1.Pt() < 10 || vqt2.Pt() < 10 || 
+      vqb1.Pt() < 10 ||  vqb2.Pt() < 10) continue;
+      histo->Fill(7., weight); 
+    */
     
     /*
-    if (vlep1.Pt() < 20 && vlep2.Pt() < 20) continue;
-     histo->Fill(8., weight); 
-     */	
+      if (vlep1.Pt() < 20 && vlep2.Pt() < 20) continue;
+      histo->Fill(8., weight); 
+    */	
     // Filling histos
     histo_dr->Fill(vlep1.DeltaR(vlep2), weight);
     histo_dr_hwwqq->Fill(vqw1.DeltaR(vqw2), weight);
