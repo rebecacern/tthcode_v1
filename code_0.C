@@ -160,14 +160,12 @@ void code_0(int nsel=0, bool silent=0){
       ttH::GenParticle child_2 = pruned_genParticles->at(W_1.child1);
       if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13){ nHleptons++; indexes[0]=W_1.child0;}
       else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13){ nHleptons++; indexes[0]=W_1.child1;}
-      else if (abs(child_1.pdgID) < 5 && abs(child_2.pdgID) < 5){ indexes[6]=W_1.child0;indexes[7]=W_1.child1;}
     }
     if (W_2.child0 != 9999 && W_2.child1 != 9999) {
       ttH::GenParticle child_1 = pruned_genParticles->at(W_2.child0);
       ttH::GenParticle child_2 = pruned_genParticles->at(W_2.child1);
       if (abs(child_1.pdgID) == 11 || abs(child_1.pdgID) == 13){ nHleptons++;; indexes[0]=W_2.child0;}
       else if (abs(child_2.pdgID) == 11 || abs(child_2.pdgID) == 13) {nHleptons++;indexes[0]=W_2.child1;}
-      else if (abs(child_1.pdgID) < 5 && abs(child_2.pdgID) < 5){ indexes[6]=W_2.child0;indexes[7]=W_2.child1;}
     }
     
     if (nHleptons != 1) continue;
@@ -215,41 +213,73 @@ void code_0(int nsel=0, bool silent=0){
 	  if (genpar.mother != 9999){
 	    ttH::GenParticle mompar = pruned_genParticles->at(genpar.mother);
 	    if  (abs(mompar.pdgID) == 24){
-              
 	      if (mompar.mother != 9999){
 		ttH::GenParticle granpar = pruned_genParticles->at(mompar.mother);
-		if (abs(granpar.pdgID) == 6) ntopleptons++;
-		   
-	      } 
-	      
+		if (abs(granpar.pdgID) == 6 && genpar.status == 23) {
+		  ntopleptons++; 
+		  indexes[1] = i;
+		  indexes[2] = mompar.mother;
+		}
+              } 
 	    }
 	  }
 	}
       }
     } 
-    cout << ntopleptons << endl;
-  
-   
+    if (ntopleptons >  2) cout << "[Info:] Something fishy" << endl;
+    
     if (ntopleptons != 1) continue;
+    histo->Fill(5., weight);
     
-   
-   
-   
-    /*
+    //lepton from the Higgs
+    int indexl = 0;
+    int counter = 0;
+    for (int i = 0; i < pruned_genParticles->size(); i++){
+      ttH::GenParticle genpar = pruned_genParticles->at(i);
+      if (i !=  indexes[1]) {
+        if (abs(genpar.pdgID) == 13 || genpar.status == 11){
+	  if (genpar.mother != 9999){
+	    ttH::GenParticle mompar = pruned_genParticles->at(genpar.mother);
+	      if (mompar.mother != 9999){
+		ttH::GenParticle granpar = pruned_genParticles->at(mompar.mother);
+		cout << iEvent << ": "<<  i <<" - " << granpar.pdgID << " - " << mompar.pdgID << " - " << genpar.pdgID <<  " status: " << genpar.status << endl;
+		if (abs(granpar.pdgID) == 25 && genpar.status == 1) {
+		  counter ++;
+		  indexl = i;
+		}
+              
+	    }
+	  }
+	}
+      }
+    } 
+    cout << counter << " ---> " << indexl << " - " << indexes[0] << endl;
+    ttH::GenParticle genpar = pruned_genParticles->at(indexl);
+    if (genpar.mother != 9999) {
+      ttH::GenParticle mompar = pruned_genParticles->at(genpar.mother);
+      ttH::GenParticle granpar = pruned_genParticles->at(mompar.mother);
+      ttH::GenParticle son1 = pruned_genParticles->at(granpar.child0);
+      if (indexl == granpar.child1) son1 = pruned_genParticles->at(granpar.child1);
+      if (son1.child0 !=9999 && son1.child1 != 9999){
+      ttH::GenParticle grandson1 = pruned_genParticles->at(son1.child0);
+      ttH::GenParticle grandson2 = pruned_genParticles->at(son1.child1);
+      
+      cout << grandson1.pdgID  << " - " << grandson2.pdgID <<  endl;
+      }
+    }
+    for (int i =0; i<8; i++){
+    cout << indexes[i] << " " ;
+    }
+    cout << endl;
     
-
-      for (int i =0; i<8; i++){
-      cout << indexes[i] << " " ;}
-      cout << endl;
- 
-    */
-    /*  ttH::GenParticle lep1 = pruned_genParticles->at(indexes[0]);
-	ttH::GenParticle lep2 = pruned_genParticles->at(indexes[1]);
-
-	if (lep1.pdgID*lep2.pdgID < 1) continue;
-	histo->Fill(5., weight);
+    ttH::GenParticle lep1 = pruned_genParticles->at(indexes[0]);
+    ttH::GenParticle lep2 = pruned_genParticles->at(indexes[1]);
+    
+    if (lep1.pdgID*lep2.pdgID < 1) continue;
+    histo->Fill(6., weight);
+	
 	cout << endl;
-	bool index_prop = true;
+	/*bool index_prop = true;
 	for (int i =0; i<8; i++){
 	cout << indexes[i] << " " ;
 	if (indexes [i] == -1) index_prop = false;}
@@ -268,7 +298,7 @@ void code_0(int nsel=0, bool silent=0){
     */
    
     
-    
+    /*
     //leptons
     TVector3 vlep1(lep1.tlv().Px(), lep1.tlv().Py(), lep1.tlv().Pz());
     TVector3 vlep2(lep2.tlv().Px(), lep2.tlv().Py(), lep2.tlv().Pz());
@@ -309,6 +339,7 @@ void code_0(int nsel=0, bool silent=0){
       if (vlep1.Pt() < 20 && vlep2.Pt() < 20) continue;
       histo->Fill(8., weight); 
     */	
+    /*
     // Filling histos
     histo_dr->Fill(vlep1.DeltaR(vlep2), weight);
     histo_dr_hwwqq->Fill(vqw1.DeltaR(vqw2), weight);
@@ -321,7 +352,7 @@ void code_0(int nsel=0, bool silent=0){
     
     if (mindr > 0.3) continue;
     histo->Fill(9., weight); 
-    
+    */
      
     
   }
@@ -339,8 +370,8 @@ void code_0(int nsel=0, bool silent=0){
       if (i == 3) cout << " HWW : " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 4) cout << " Semileptonic HWW: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 5) cout << " Two Wb decays of tt: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 6) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 7) cout << " proper index: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 6) cout << " Semileptonic tt: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 7) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 8) cout << " pt > 10 all : " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 9) cout << " pt > 20,10 leptons: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 10) cout << " DR HWW and closest LF q < 0.3: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
