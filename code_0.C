@@ -240,13 +240,13 @@ void code_0(int nsel=0, bool silent=0){
         if (abs(genpar.pdgID) == 13 || genpar.status == 11){
 	  if (genpar.mother != 9999){
 	    ttH::GenParticle mompar = pruned_genParticles->at(genpar.mother);
-	      if (mompar.mother != 9999){
-		ttH::GenParticle granpar = pruned_genParticles->at(mompar.mother);
-		cout << iEvent << ": "<<  i <<" - " << granpar.pdgID << " - " << mompar.pdgID << " - " << genpar.pdgID <<  " status: " << genpar.status << endl;
-		if (abs(granpar.pdgID) == 25 && genpar.status == 1) {
-		  counter ++;
-		  indexl = i;
-		}
+	    if (mompar.mother != 9999){
+	      ttH::GenParticle granpar = pruned_genParticles->at(mompar.mother);
+	      cout << iEvent << ": "<<  i <<" - " << granpar.pdgID << " - " << mompar.pdgID << " - " << genpar.pdgID <<  " status: " << genpar.status << endl;
+	      if (abs(granpar.pdgID) == 25 && genpar.status == 1) {
+		counter ++;
+		indexl = i;
+	      }
               
 	    }
 	  }
@@ -261,14 +261,14 @@ void code_0(int nsel=0, bool silent=0){
       ttH::GenParticle son1 = pruned_genParticles->at(granpar.child0);
       if (indexl == granpar.child1) son1 = pruned_genParticles->at(granpar.child1);
       if (son1.child0 !=9999 && son1.child1 != 9999){
-      ttH::GenParticle grandson1 = pruned_genParticles->at(son1.child0);
-      ttH::GenParticle grandson2 = pruned_genParticles->at(son1.child1);
+	ttH::GenParticle grandson1 = pruned_genParticles->at(son1.child0);
+	ttH::GenParticle grandson2 = pruned_genParticles->at(son1.child1);
       
-      cout << grandson1.pdgID  << " - " << grandson2.pdgID <<  endl;
+	cout << grandson1.pdgID  << " - " << grandson2.pdgID <<  endl;
       }
     }
     for (int i =0; i<8; i++){
-    cout << indexes[i] << " " ;
+      cout << indexes[i] << " " ;
     }
     cout << endl;
     
@@ -278,14 +278,14 @@ void code_0(int nsel=0, bool silent=0){
     if (lep1.pdgID*lep2.pdgID < 1) continue;
     histo->Fill(6., weight);
 	
-	cout << endl;
-	/*bool index_prop = true;
-	for (int i =0; i<8; i++){
-	cout << indexes[i] << " " ;
-	if (indexes [i] == -1) index_prop = false;}
-	if (!index_prop) continue;
-	cout << endl;
-	histo->Fill(6., weight);
+    cout << endl;
+    /*bool index_prop = true;
+      for (int i =0; i<8; i++){
+      cout << indexes[i] << " " ;
+      if (indexes [i] == -1) index_prop = false;}
+      if (!index_prop) continue;
+      cout << endl;
+      histo->Fill(6., weight);
     */
 
     /*   
@@ -330,9 +330,9 @@ void code_0(int nsel=0, bool silent=0){
     TVector3 vqb1(qb1.tlv().Px(), qb1.tlv().Py(), qb1.tlv().Pz());
     TVector3 vqb2(qb2.tlv().Px(), qb2.tlv().Py(), qb2.tlv().Pz());
     /*
-      if (vlep1.Pt() < 10 || vlep2.Pt() < 10 || vqw1.Pt() < 10 || vqw2.Pt() < 10 || vqt1.Pt() < 10 || vqt2.Pt() < 10 || 
-      vqb1.Pt() < 10 ||  vqb2.Pt() < 10) continue;
-      histo->Fill(7., weight); 
+    if (vlep1.Pt() < 10 || vlep2.Pt() < 10 || vqw1.Pt() < 10 || vqw2.Pt() < 10 || vqt1.Pt() < 10 || vqt2.Pt() < 10 || 
+    vqb1.Pt() < 10 ||  vqb2.Pt() < 10) continue;
+    histo->Fill(7., weight); 
     */
     
     /*
