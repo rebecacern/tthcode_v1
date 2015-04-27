@@ -181,8 +181,8 @@ void code_0(int nsel=0, bool silent=0){
     } 
     
   
-    if (ntWs > 1) continue;
-     histo->Fill(6., weight);
+    if (ntWs == 2) continue;
+    histo->Fill(6., weight);
 
 /*
     if (lep1.pdgID*lep2.pdgID < 1) continue;
@@ -263,12 +263,12 @@ void code_0(int nsel=0, bool silent=0){
       if (i == 3) cout << " HWW : " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 4) cout << " H children present: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 5) cout << " H grandchildren: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 6) cout << " Semileptonic tt: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 7) cout << " SS: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 8) cout << " proper index: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 6) cout << " top children: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 7) cout << " top grandchildren: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+    /*  if (i == 8) cout << " proper index: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 9) cout << " pt > 10,10 leptons: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
       if (i == 10) cout << " pt > 20,10 leptons: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
-      if (i == 11) cout << " DR HWW and closest LF q < 0.3: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;
+      if (i == 11) cout << " DR HWW and closest LF q < 0.3: " << histo->GetBinContent(i) << " +/- " << histo->GetBinError(i) << endl;*/
     }
     cout << "------------------------------------------" << endl;
     cout << "[Info:]" << nHWW*100/nused << "% of HWW in the events" << endl;
